@@ -1,0 +1,2877 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تطبيق الأذكار وأوقات الصلاة</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #4caf50;
+            --accent-color: #81c784;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --background: #f9f9f9;
+            --card-bg: #ffffff;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-color);
+            max-width: 100vw;
+            overflow-x: hidden;
+            touch-action: pan-y;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: var(--shadow);
+        }
+		
+.tab {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s;
+    font-weight: 500;
+    flex: 1;
+    text-align: center;
+    text-decoration: none; /* إزالة التسطير الأزرق */
+    color: inherit; /* الحفاظ على اللون الحالي للنص */
+}
+
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Prayer Times Tab */
+        .prayer-times {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .current-time {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .current-time h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+        }
+
+        .current-time p {
+            font-size: 1.2rem;
+        }
+
+        .next-prayer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .next-prayer h3 {
+            margin-bottom: 5px;
+        }
+
+        .countdown {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .content-img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .content-img-group img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .prayer-card {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .prayer-card.active {
+            background-color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Athkar Tab */
+        .athkar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .reset-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.6rem;
+        }
+        
+        .athkar-options {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .athkar-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            flex: 1;
+            max-width: 150px;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+/* منع تغيير اللون عند العودة */
+.athkar-option.returned {
+    background: white !important;
+    color: var(--text-color) !important;
+    transform: none !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important;
+}
+
+        .athkar-option img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 3px solid rgba(255,255,255,0.5);
+            transition: all 0.3s;
+        }
+
+        .athkar-option.active img {
+            border-color: white;
+            transform: scale(1.05);
+        }
+
+        .athkar-option span {
+            font-weight: 500;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .athkar-option.active span {
+            font-weight: 600;
+        }
+
+        /* Quran Tab Button - Different Style */
+        .quran-option {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+        }
+        
+        .quran-option.active {
+            background: linear-gradient(135deg, #7d3c98, #8e44ad);
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 10px 0;
+            height: 20px;
+        }
+
+        .progress-container {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .progress-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2e7d32;
+            position: relative;
+            padding-right: 15px;
+        }
+
+        .progress-title::after {
+            content: "";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: #f5f9f5;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2e7d32;
+            min-width: 70px;
+            text-align: center;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .progress-bar-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 12px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #2e7d32, #4caf50);
+            transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.4) 50%,
+                rgba(255,255,255,0.1) 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-percent {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2e7d32;
+            min-width: 45px;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        /* تأثيرات عند الاكتمال */
+        .progress-complete .progress-fill {
+            animation: pulse-glow 1.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+            100% { box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+        }
+
+        .thikr-container {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .thikr-text {
+            font-size: 0.8rem !important;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            text-align: center;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--primary-color);
+            position: relative;
+            color: #333;
+            overflow-y: hidden;
+        }
+
+        @media (max-width: 600px) {
+            .thikr-text {
+                font-size: 0.8rem;
+                -webkit-text-size-adjust: none;
+            }
+        }
+
+        .thikr-text::before {
+            content: """;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 3rem;
+            color: rgba(46, 125, 50, 0.1);
+        }
+
+        .thikr-text::after {
+            content: """;
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 3rem;
+            color: rgba(46, 125, 50, 0.1);
+        }
+        
+.thikr-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column; /* فوق بعض */
+    gap: 8px; /* مسافة بسيطة بينهم */
+    align-items: flex-end; /* يلصقهم باليمين */
+}
+
+
+        .thikr-circle-wrapper {
+            order: 2;
+            margin: 10px 0;
+        }
+
+        /* زر السابق - أعلى اليمين */
+        .prev-btn {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            background: linear-gradient(to right, #f39c12, #e67e22);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 1;
+        }
+        
+        .thikr-controls {
+            position: relative;
+            padding-top: 30px;
+        }
+
+        .reset-btn {
+            position: absolute;
+            top: 5px;
+            left: 10px;
+        }
+        
+        .thikr-count {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .thikr-btns {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .thikr-btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(46, 125, 50, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+        }
+        
+        .thikr-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
+        }
+        
+        .thikr-btn:active {
+            transform: translateY(0);
+        }
+        
+        .thikr-progress {
+            margin: 25px 0;
+            font-family: inherit;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .current-count {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        .repeat-count {
+            color: #666;
+        }
+
+        .progress-track {
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            transition: width 0.5s ease-out;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to right,
+                rgba(255,255,255,0.2) 0%,
+                rgba(255,255,255,0.5) 50%,
+                rgba(255,255,255,0.2) 100%
+            );
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* تأثير عند الاكتمال */
+        .progress-fill.complete {
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(76, 175, 80, 0.5); }
+            100% { box-shadow: 0 0 15px rgba(76, 175, 80, 0.8); }
+        }
+        
+        /* تنسيقات الدائرة */
+        .thikr-circle-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 20px auto;
+        }
+
+        .thikr-circle-progress {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: calc(100% + 10px);
+            height: calc(100% + 10px);
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-color) 0%, #e0e0e0 0%);
+            transition: background 0.5s ease-out;
+            z-index: 1;
+        }
+
+        .thikr-circle {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            position: relative;
+            z-index: 2;
+            border: 3px solid var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .thikr-circle:active {
+            transform: scale(0.95);
+        }
+
+        .complete-animation {
+            animation: pulse 1s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* تنسيقات شريط التقدم */
+        .progress-container {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            transition: width 0.6s ease;
+            position: relative;
+        }
+
+        .progress-bar.complete .progress-fill {
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+
+        /* Water Counter Tab */
+        .water-counter {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .water-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .water-input {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .water-input label {
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .water-input select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+        }
+
+        .cup-container {
+            margin: 20px 0;
+            position: relative;
+            height: 200px;
+        }
+
+        .cup-img {
+            width: 120px;
+            height: 200px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .cup-img:active {
+            transform: scale(0.95);
+        }
+
+        .water-stat {
+            text-align: center;
+            min-width: 80px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .water-stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .water-progress {
+            margin-top: 15px;
+            height: 30px;
+            background-color: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .water-filled {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        /* Tasbeeh Counter Tab */
+        .tasbeeh-counter {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .tasbeeh-display {
+            font-size: 3rem;
+            margin: 20px 0;
+            color: var(--primary-color);
+        }
+
+        .tasbeeh-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin: 0 10px;
+            width: 80px;
+            height: 80px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .tasbeeh-btn:active {
+            transform: scale(0.95);
+        }
+
+        .tasbeeh-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .tasbeeh-reset {
+            background-color: #f44336;
+        }
+
+        .tasbeeh-undo {
+            background-color: #ff9800;
+        }
+
+        .tasbeeh-controls {
+            margin-top: 20px;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+
+        .celebration h2 {
+            color: #ffeb3b;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 400px) {
+            .prayer-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tasbeeh-btn {
+                width: 70px;
+                height: 70px;
+                padding: 10px 20px;
+            }
+
+            .thikr-text {
+                font-size: 1rem;
+                min-height: 120px;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card p {
+            margin: 8px 0;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #dc2626;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            font-size: 1.1rem;
+            padding: 8px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            transition: background-color 0.3s;
+        }
+
+        ul li:last-child {
+            border-bottom: none;
+        }
+
+        .active-prayer {
+            background-color: #c8e6c9;
+            border-radius: 10px;
+        }
+        
+        .prev-btn {
+            background: linear-gradient(to right, #f39c12, #e67e22);
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            min-width: 70px;
+            height: 32px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .prev-btn svg {
+            width: 10px;
+            height: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-text {
+            font-size: 0.7rem;
+            line-height: 1;
+        }
+
+        .prev-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .multi-cups-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .water-cup {
+            width: 70px;
+            height: 120px;
+            object-fit: contain;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .water-cup:active {
+            transform: scale(0.95);
+        }
+
+        .water-cup.empty {
+            opacity: 0.6;
+        }
+        
+        .celebration-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2e7d32;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -40%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .water-filled.complete {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+        }
+        
+        .refill-btn {
+            background: linear-gradient(to right, #2196F3, #1976D2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .refill-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .refill-btn:active {
+            transform: translateY(0);
+        }
+        
+        .water-cup {
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .water-cup.refilling {
+            animation: refillAnimation 1s ease;
+        }
+
+        @keyframes refillAnimation {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .empty {
+            filter: grayscale(70%);
+            opacity: 0.7;
+        }
+        
+        .water-stats-horizontal {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .stat-separator {
+            color: #ccc;
+            padding: 0 5px;
+        }
+
+        .water-stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .water-stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .location-control {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .city-select {
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            font-size: 1rem;
+            background-color: white;
+            color: var(--text-color);
+            font-family: inherit;
+            transition: all 0.3s;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .city-select:hover {
+            border-color: var(--accent-color);
+        }
+
+        .city-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+
+        .city-select option {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; bottom: 0; }
+            20% { opacity: 1; bottom: 20px; }
+            80% { opacity: 1; bottom: 20px; }
+            100% { opacity: 0; bottom: 0; }
+        }
+        
+        /* إضافة أنماط جديدة للصفحة المخصصة للأذكار */
+        .athkar-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .back-to-main {
+            position: absolute;
+            top: 30px;
+            left: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-to-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .back-to-main:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .back-to-main svg {
+            transition: transform 0.3s ease;
+        }
+
+        .back-to-main:hover svg {
+            transform: translateX(-3px);
+        }
+        
+        .athkar-fullscreen-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-top: 10px;
+        }
+        
+        .athkar-fullscreen-header h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+        
+body.athkar-active {
+    overflow: hidden !important;
+    touch-action: none;
+    /* تمت إزالة position: fixed */
+}
+
+        /* منع التمرير في صفحة الأذكار الكاملة */
+        .athkar-fullscreen {
+            overflow: hidden !important;
+            touch-action: none;
+        }
+        
+        /* إخفاء شريط التقدم من تبويب الأذكار الرئيسي */
+        #athkar .thikr-progress {
+            display: none;
+        }
+
+        /* إظهار شريط التقدم في صفحة الأذكار الكاملة */
+        .athkar-fullscreen .thikr-progress {
+            display: block;
+        }
+        
+        /* إخفاء عناصر التحكم والدائرة من التبويب الرئيسي */
+        #athkar .thikr-controls,
+        #athkar .thikr-circle-wrapper {
+            display: none !important;
+        }
+
+        /* إظهارها في الصفحة الكاملة */
+        .athkar-fullscreen .thikr-controls,
+        .athkar-fullscreen .thikr-circle-wrapper {
+            display: block;
+        }
+        
+        /* تنسيقات صفحة القرآن الكاملة */
+        .quran-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .quran-fullscreen-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-top: 40px;
+        }
+
+        .quran-fullscreen-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        /* تنسيقات تبويبات القرآن */
+        .quran-tabs {
+            display: flex;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 5px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .quran-tab {
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+            flex: 1;
+            text-align: center;
+        }
+
+        .quran-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+
+.quran-content.active {
+    display: block;
+}
+
+
+        .content-img-group img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        /* Quran Tab Styles */
+        .quran-tab-container {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .quran-tab-container.active {
+            display: block;
+        }
+        
+        .quran-option {
+            background: linear-gradient(135deg, #8e44ad, #9b59b6);
+            color: white;
+        }
+        
+        .quran-option.active {
+            background: linear-gradient(135deg, #7d3c98, #8e44ad);
+        }
+		/* تأكد من وجود هذه القواعد */
+.quran-content {
+    display: none;
+    opacity: 1 !important;
+}
+
+.quran-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+.quran-content img {
+    max-width: 100%;
+    height: auto;
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.quran-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+/* 1) رجّع الحاوية للوضع الطبيعي حتى ما تسحب الدائرة معها */
+.athkar-fullscreen .thikr-container .thikr-controls {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  left: auto !important;
+  display: block !important;
+}
+
+/* 2) ثبّت الزرين أعلى يمين الشاشة فوق بعض (بدون تأثير على الدائرة) */
+#fullscreen-prev-thikr-btn,
+#fullscreen-reset-athkar,
+#prev-thikr-btn,
+#reset-athkar {
+  position: fixed !important;
+  right: 12px !important;
+  left: auto !important;
+  z-index: 10050 !important; /* فوق كل شيء */
+}
+
+/* ترتيبهم فوق بعض */
+#fullscreen-prev-thikr-btn,
+#prev-thikr-btn {
+  top: 12px !important;   /* الزر العلوي: السابق */
+}
+
+#fullscreen-reset-athkar,
+#reset-athkar {
+  top: 56px !important;   /* تحت زر السابق */
+}
+
+/* 3) تأكيد تمركز الدائرة بالنص تحت */
+.athkar-fullscreen .thikr-circle-wrapper {
+  margin: 20px auto !important;           /* بالنص أفقياً */
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* ضمان أن الدائرة نفسها تبقى ضمن التدفق الطبيعي */
+.athkar-fullscreen .thikr-circle {
+  position: relative !important;
+}
+
+
+
+    </style>
+</head>
+<body>
+<header>
+    <h1>تطبيق الأذكار وأوقات الصلاة</h1>
+</header>
+
+<div class="container">
+    <div class="tabs">
+        <div class="tab active" data-tab="prayer">أوقات الصلاة</div>
+        <a href="index.html" class="tab">الأذكار</a>
+        <div class="tab" data-tab="water">عدّاد الماء</div>
+        <a href="tas.html" class="tab">التسبيح</a>
+    </div>
+</div>
+
+
+        <div class="tab-content" id="prayer">
+            <div class="container">
+                <div class="card">
+                    <div class="location-control">
+                        <label for="city-select">اختر المدينة:</label>
+                        <select id="city-select" class="city-select">
+                            <option value="Al-Mithnab">المذنب</option>
+                            <option value="Riyadh">الرياض</option>
+                            <option value="Jeddah">جدة</option>
+                            <option value="Dammam">الدمام</option>
+                            <option value="Mecca">مكة المكرمة</option>
+                            <option value="Medina">المدينة المنورة</option>
+                            <option value="Abha">أبها</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <p>⏰ الوقت الحالي: <span id="current-time">--:--:--</span></p>
+                    <p>🙏 الصلاة القادمة: <span class="highlight" id="next-prayer">--</span></p>
+                    <p>⏳ المتبقي: <span class="highlight" id="countdown">--:--:--</span></p>
+                </div>
+
+                <div class="card">
+                    <ul>
+                        <li><span>الفجر</span><span id="fajr-time">--:--</span></li>
+                        <li><span>الشروق</span><span id="sunrise-time">--:--</span></li>
+                        <li><span>الظهر</span><span id="dhuhr-time">--:--</span></li>
+                        <li><span>العصر</span><span id="asr-time">--:--</span></li>
+                        <li><span>المغرب</span><span id="maghrib-time">--:--</span></li>
+                        <li><span>العشاء</span><span id="isha-time">--:--</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Athkar Tab -->
+        <div class="tab-content" id="athkar">
+            <!-- أذكار الصباح والمساء -->
+            <div class="athkar-options">
+                <div class="athkar-option" data-time="morning">
+                    <img src="sbah.png" alt="أذكار الصباح">
+                    <span>أذكار الصباح</span>
+                </div>
+
+                <!-- تبويب "القرآن" الذي سيكون مستقلًا -->
+                <div class="athkar-option quran-option" data-time="quran">
+                    <img src="quran-icon.png" alt="القرآن">
+                    <span>القرآن</span>
+                </div>
+
+                <div class="athkar-option" data-time="evening">
+                    <img src="masa.png" alt="أذكار المساء">
+                    <span>أذكار المساء</span>
+                </div>
+            </div>
+
+            <!-- محتوى الأذكار (يظهر فقط عند اختيار الصباح أو المساء) -->
+            <div id="athkar-content">
+                <div class="thikr-progress">
+                    <div class="progress-info">
+                        <span class="current-count" id="current-thikr">0/29</span>
+                        <span class="repeat-count" id="repetition-count">التكرار: 0/0</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <div class="thikr-container">
+                    <div class="thikr-text" id="thikr-text1">
+                        اختر وقت الأذكار (صباح/مساء) لبدء الأذكار
+                    </div>
+                    <div class="thikr-controls">
+                        <button class="thikr-btn prev-btn" id="prev-thikr-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                            </svg>
+                            <span class="btn-text">السابق</span>
+                        </button>
+                        <button class="reset-btn" id="reset-athkar">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                                <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                            </svg>
+                            بدء جديد
+                        </button>
+                    </div>
+                    <div class="thikr-circle-wrapper">
+                        <div class="thikr-circle-progress" id="thikr-circle-progress"></div>
+                        <div class="thikr-circle" id="thikr-circle">
+                            <span id="thikr-current-count">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- تبويبات القرآن (تظهر فقط عند اختيار القرآن) -->
+            <div id="quran-tabs" class="quran-tab-container">
+                <div class="quran-tabs">
+                    <div class="quran-tab active" data-tab="sura-al-mulk">سورة الملك</div>
+                    <div class="quran-tab" data-tab="ayat-baqara">آخر آيتين من سورة البقرة</div>
+                    <div class="quran-tab" data-tab="sura-al-kahf">سورة الكهف</div>
+                </div>
+
+    <div id="sura-al-mulk" class="quran-content active">
+    <img src="sura-al-mulk-1.jpg" class="content-img" alt="سورة الملك 1">
+    <img src="sura-al-mulk-2.jpg" class="content-img" alt="سورة الملك 2">
+		<img src="sura-al-mulk-3.jpg" class="content-img" alt="سورة الملك 2">
+</div>
+
+                <div id="ayat-baqara" class="quran-content">
+                    <img src="ayat-baqara.jpg" class="content-img" alt="آخر آيتين من سورة البقرة">
+                </div>
+
+                <div id="sura-al-kahf" class="quran-content">
+                    <div class="content-img-group">
+                        <img src="sura-al-kahf-1.jpg" class="content-img" alt="سورة الكهف 1">
+                        <img src="sura-al-kahf-2.jpg" class="content-img" alt="سورة الكهف 2">
+                        <img src="sura-al-kahf-3.jpg" class="content-img" alt="سورة الكهف 3">
+                        <img src="sura-al-kahf-4.jpg" class="content-img" alt="سورة الكهف 4">
+                        <img src="sura-al-kahf-5.jpg" class="content-img" alt="سورة الكهف 5">
+                        <img src="sura-al-kahf-6.jpg" class="content-img" alt="سورة الكهف 6">
+                        <img src="sura-al-kahf-7.jpg" class="content-img" alt="سورة الكهف 7">
+                        <img src="sura-al-kahf-8.jpg" class="content-img" alt="سورة الكهف 8">
+                        <img src="sura-al-kahf-9.jpg" class="content-img" alt="سورة الكهف 9">
+                        <img src="sura-al-kahf-10.jpg" class="content-img" alt="سورة الكهف 10">
+                        <img src="sura-al-kahf-11.jpg" class="content-img" alt="سورة الكهف 11">
+                        <img src="sura-al-kahf-12.jpg" class="content-img" alt="سورة الكهف 12">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة الأذكار الكاملة -->
+        <div class="athkar-fullscreen" id="athkar-fullscreen">
+<button class="back-to-main" id="back-to-main" onclick="closeAthkarFullscreen(); setTimeout(() => { window.location.reload(); }, 100);">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+    </svg>
+    العودة
+</button>
+            <div class="athkar-fullscreen-header">
+                <h2 id="fullscreen-athkar-title">الأذكار</h2>
+            </div>
+            
+            <div class="thikr-progress">
+                <div class="progress-info">
+                    <span class="current-count" id="fullscreen-current-thikr">0/29</span>
+                    <span class="repeat-count" id="fullscreen-repetition-count">التكرار: 0/0</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="fullscreen-progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="thikr-container">
+                <div class="thikr-text" id="fullscreen-thikr-text">
+                    انقر للبدء ♥️
+                </div>
+                
+                <div class="thikr-controls">
+                    <button class="reset-btn" id="fullscreen-reset-athkar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                        بدء جديد
+                    </button>
+                    
+                    <div class="thikr-circle-wrapper">
+                        <div class="thikr-circle-progress" id="fullscreen-thikr-circle-progress"></div>
+                        <div class="thikr-circle" id="fullscreen-thikr-circle">
+                            <span id="fullscreen-thikr-current-count">0</span>
+                        </div>
+                    </div>
+                    
+                    <button class="thikr-btn prev-btn" id="fullscreen-prev-thikr-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                        </svg>
+                        <span class="btn-text">السابق</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحة القرآن الكاملة -->
+        <div class="quran-fullscreen" id="quran-fullscreen">
+		    <div id="quran-initial-loader" style="display: none;"></div>
+
+            <button class="back-to-main" id="back-to-main-quran">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                </svg>
+                العودة
+            </button>
+            
+            <div class="quran-fullscreen-header">
+                <h2>القرآن الكريم</h2>
+            </div>
+
+            <div class="quran-tabs">
+                <div class="quran-tab active" data-tab="sura-al-mulk">سورة الملك</div>
+                <div class="quran-tab" data-tab="ayat-baqara">آخر آيتين من سورة البقرة</div>
+                <div class="quran-tab" data-tab="sura-al-kahf">سورة الكهف</div>
+            </div>
+
+            <div id="sura-al-mulk" class="quran-content active">
+                <img src="sura-al-mulk-1.jpg" class="content-img" alt="سورة الملك 1">
+                <img src="sura-al-mulk-2.jpg" class="content-img" alt="سورة الملك 2">
+            </div>
+
+            <div id="ayat-baqara" class="quran-content">
+                <img src="ayat-baqara.jpg" class="content-img" alt="آخر آيتين من سورة البقرة">
+            </div>
+
+            <div id="sura-al-kahf" class="quran-content">
+                <div class="content-img-group">
+                    <img src="sura-al-kahf-1.jpg" class="content-img" alt="سورة الكهف 1">
+                    <img src="sura-al-kahf-2.jpg" class="content-img" alt="سورة الكهف 2">
+                    <img src="sura-al-kahf-3.jpg" class="content-img" alt="سورة الكهف 3">
+                    <img src="sura-al-kahf-4.jpg" class="content-img" alt="سورة الكهف 4">
+                    <img src="sura-al-kahf-5.jpg" class="content-img" alt="سورة الكهف 5">
+                    <img src="sura-al-kahf-6.jpg" class="content-img" alt="سورة الكهف 6">
+                    <img src="sura-al-kahf-7.jpg" class="content-img" alt="سورة الكهف 7">
+                    <img src="sura-al-kahf-8.jpg" class="content-img" alt="سورة الكهف 8">
+                    <img src="sura-al-kahf-9.jpg" class="content-img" alt="سورة الكهف 9">
+                    <img src="sura-al-kahf-10.jpg" class="content-img" alt="سورة الكهف 10">
+                    <img src="sura-al-kahf-11.jpg" class="content-img" alt="سورة الكهف 11">
+                    <img src="sura-al-kahf-12.jpg" class="content-img" alt="سورة الكهف 12">
+                </div>
+            </div>
+        </div>
+
+        <!-- Water Counter Tab -->
+        <div class="tab-content" id="water">
+            <div class="water-counter">
+                <h2>عداد شرب الماء</h2>
+                
+                <div class="water-controls">
+                    <div class="water-input">
+                        <label for="water-goal">كمية الماء المطلوبة (مل):</label>
+                        <select id="water-goal">
+                            <option value="1000">1000 مل</option>
+                            <option value="1500">1500 مل</option>
+                            <option value="2000" selected>2000 مل</option>
+                            <option value="2500">2500 مل</option>
+                            <option value="3000">3000 مل</option>
+                        </select>
+                    </div>
+                    <div class="water-input">
+                        <label for="cup-size">حجم الكوب (مل):</label>
+                        <select id="cup-size">
+                            <option value="200">200 مل</option>
+                            <option value="250">250 مل</option>
+                            <option value="300" selected>300 مل</option>
+                            <option value="330">330 مل</option>
+                            <option value="400">400 مل</option>
+                            <option value="500">500 مل</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- حاوية الأكواب -->
+                <div class="multi-cups-container" id="multi-cups-container">
+                    <!-- سيتم إضافة الأكواب هنا ديناميكياً -->
+                </div>
+
+                <div class="water-result">
+                    <div class="water-stats-horizontal">
+                        <div class="stat-item">
+                            <div class="water-stat-value" id="water-consumed">0</div>
+                            <div class="water-stat-label">مل المستهلكة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="water-stat-value" id="water-cups">0</div>
+                            <div class="water-stat-label">عدد الأكواب</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="water-stat-value" id="water-required">0</div>
+                            <div class="water-stat-label">أكواب مطلوبة</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="water-stat-value" id="water-remaining">2000</div>
+                            <div class="water-stat-label">مل المتبقية</div>
+                        </div>
+                    </div>
+                    
+                    <button class="refill-btn" id="refill-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                        إعادة ملء الأكواب
+                    </button>
+                    
+                    <div class="water-progress">
+                        <div class="water-filled" id="water-filled"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasbeeh Counter Tab -->
+        <div class="tab-content" id="tasbeeh">
+            <div class="tasbeeh-counter">
+                <h2>عداد التسبيح</h2>
+                <div class="tasbeeh-display" id="tasbeeh-count">0</div>
+                <div class="tasbeeh-controls">
+                    <button class="tasbeeh-btn" id="tasbeeh-add">+1</button>
+                    <button class="tasbeeh-btn tasbeeh-reset" id="tasbeeh-reset">تصفير</button>
+                    <button class="tasbeeh-btn tasbeeh-undo" id="tasbeeh-undo">تراجع</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration">
+        <h2>أحسنت! 👏</h2>
+        <p>وصلت إلى العدد 100</p>
+        <p>كمّل يا جميل ❤️</p>
+    </div>
+
+    <script>
+        // Disable zoom and touch movements
+        document.addEventListener('touchmove', function(event) {
+            if (event.scale !== 1) { event.preventDefault(); }
+        }, { passive: false });
+
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+// حفظ آخر تبويب
+function saveLastTab(tabId) {
+    localStorage.setItem("lastTab", tabId);
+}
+
+// استرجاع آخر تبويب
+function loadLastTab() {
+    return localStorage.getItem("lastTab") || "prayer";
+}
+
+// تهيئة أولية عند تحميل الصفحة
+function initializeTabs() {
+    const lastTab = loadLastTab();
+
+    // إخفاء جميع المحتويات
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+    });
+
+    // إظهار المحتوى المحفوظ
+    const activeContent = document.getElementById(lastTab);
+    if (activeContent) {
+        activeContent.style.display = 'block';
+        activeContent.classList.add('active');
+    }
+
+    // تحديث التبويبات النشطة
+    tabs.forEach(tab => tab.classList.remove('active'));
+    const activeTab = document.querySelector(`.tab[data-tab="${lastTab}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    // إظهار الهيدر دائماً
+    const header = document.querySelector('header');
+    header.style.display = 'block';
+}
+
+// تبديل التبويبات
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        const tabId = tab.getAttribute('data-tab');
+
+        // إخفاء جميع المحتويات
+        tabContents.forEach(content => {
+            content.style.display = 'none';
+            content.classList.remove('active');
+        });
+
+        // إظهار المحتوى المحدد فقط بناءً على الـ tabId
+        const activeContent = document.getElementById(tabId);
+        if (activeContent) {
+            activeContent.style.display = 'block';
+            activeContent.classList.add('active');
+        }
+
+        // تحديث التبويبات النشطة
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        // إظهار الهيدر
+        const header = document.querySelector('header');
+        header.style.display = 'block';
+
+        // نحفظ التبويب
+        saveLastTab(tabId);
+    });
+});
+
+// تهيئة الصفحة عند التحميل
+document.addEventListener('DOMContentLoaded', initializeTabs);
+window.addEventListener('load', initializeTabs);
+
+// عرض أول تبويب تلقائياً للقرآن (يبقى كما هو)
+setTimeout(() => {
+    if (document.getElementById('quran-fullscreen')) {
+        switchQuranTab('sura-al-mulk');
+    }
+}, 500);
+
+        
+        const prayerLabels = {
+            Fajr: 'الفجر',
+            Sunrise: 'الشروق',
+            Dhuhr: 'الظهر',
+            Asr: 'العصر',
+            Maghrib: 'المغرب',
+            Isha: 'العشاء'
+        };
+
+        let prayerTimes = {};
+
+        function convertTo12Hour(time24) {
+            const [hourStr, minute] = time24.split(":");
+            let hour = parseInt(hourStr, 10);
+            const period = hour >= 12 ? "م" : "ص";
+            hour = hour % 12 || 12;
+            return `${hour}:${minute} ${period}`;
+        }
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours() % 12 || 12;
+            const minutes = now.getMinutes().toString().padStart(2, "0");
+            const seconds = now.getSeconds().toString().padStart(2, "0");
+            const period = now.getHours() >= 12 ? "م" : "ص";
+            document.getElementById("current-time").textContent = `${hours}:${minutes}:${seconds} ${period}`;
+        }
+
+        function getNextPrayer() {
+            const now = new Date();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+            for (const key of ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"]) {
+                const [h, m] = prayerTimes[key].split(":").map(Number);
+                const totalMins = h * 60 + m;
+                if (totalMins > currentMinutes) {
+                    return { name: key, hour: h, minute: m };
+                }
+            }
+            const [h, m] = prayerTimes["Fajr"].split(":").map(Number);
+            return { name: "Fajr", hour: h, minute: m, tomorrow: true };
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const next = getNextPrayer();
+            const target = new Date();
+            if (next.tomorrow) target.setDate(target.getDate() + 1);
+            target.setHours(next.hour, next.minute, 0, 0);
+
+            const diff = target - now;
+            if (diff < 0) return;
+
+            const h = Math.floor(diff / (1000 * 60 * 60)).toString().padStart(2, "0");
+            const m = Math.floor((diff / (1000 * 60)) % 60).toString().padStart(2, "0");
+            const s = Math.floor((diff / 1000) % 60).toString().padStart(2, "0");
+
+            document.getElementById("countdown").textContent = `${h}:${m}:${s}`;
+            document.getElementById("next-prayer").textContent = prayerLabels[next.name];
+
+            // إزالة التمييز من الكل
+            document.querySelectorAll("ul li").forEach(li => {
+                li.classList.remove("active-prayer");
+            });
+
+            // تمييز الصلاة القادمة
+            const prayerKey = next.name.toLowerCase() + "-time";
+            const liElement = document.getElementById(prayerKey)?.parentElement;
+            if (liElement) {
+                liElement.classList.add("active-prayer");
+            }
+        }
+
+        // دالة لجلب أوقات الصلاة مع تخزين الموقع
+        async function fetchPrayerTimesFromAPI(city = 'auto') {
+            try {
+                let url;
+                let locationKey = 'userLocation';
+
+                if (city === 'auto') {
+                    if (!navigator.geolocation) {
+                        throw new Error("المتصفح لا يدعم تحديد الموقع");
+                    }
+
+                    // جلب الموقع المحفوظ أو تحديد موقع جديد
+                    const savedLocation = localStorage.getItem(locationKey);
+                    let position;
+
+                    if (savedLocation) {
+                        position = JSON.parse(savedLocation);
+                        console.log("استخدام الموقع المحفوظ:", position);
+                    } else {
+                        position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject);
+                        });
+                        // حفظ الموقع الجديد
+                        const locationData = {
+                            coords: {
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude
+                            },
+                            timestamp: position.timestamp
+                        };
+                        localStorage.setItem(locationKey, JSON.stringify(locationData));
+                    }
+
+                    url = `https://api.aladhan.com/v1/timings?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&method=4`;
+                } else {
+                    // استخدام المدينة المحددة
+                    url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=Saudi%20Arabia&method=4`;
+                    // مسح الموقع المحفوظ عند اختيار مدينة يدوياً
+                    localStorage.removeItem(locationKey);
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("فشل في جلب البيانات");
+                
+                const data = await response.json();
+                const times = data.data.timings;
+
+                prayerTimes = {
+                    Fajr: times.Fajr,
+                    Sunrise: times.Sunrise,
+                    Dhuhr: times.Dhuhr,
+                    Asr: times.Asr,
+                    Maghrib: times.Maghrib,
+                    Isha: times.Isha
+                };
+
+                updatePrayerTimesUI();
+                updateCountdown();
+
+            } catch (error) {
+                console.error("خطأ في جلب أوقات الصلاة:", error);
+                showError("تعذر جلب أوقات الصلاة. يرجى المحاولة لاحقاً");
+            }
+        }
+
+        // دالة لتحديث واجهة المستخدم
+        function updatePrayerTimesUI() {
+            if (!prayerTimes.Fajr) return;
+            
+            document.getElementById("fajr-time").textContent = convertTo12Hour(prayerTimes.Fajr);
+            document.getElementById("sunrise-time").textContent = convertTo12Hour(prayerTimes.Sunrise);
+            document.getElementById("dhuhr-time").textContent = convertTo12Hour(prayerTimes.Dhuhr);
+            document.getElementById("asr-time").textContent = convertTo12Hour(prayerTimes.Asr);
+            document.getElementById("maghrib-time").textContent = convertTo12Hour(prayerTimes.Maghrib);
+            document.getElementById("isha-time").textContent = convertTo12Hour(prayerTimes.Isha);
+        }
+
+        // دالة لطلب إذن الموقع عند الحاجة
+        function requestLocationPermission() {
+            return new Promise((resolve) => {
+                if (localStorage.getItem('userLocation')) {
+                    resolve(true);
+                    return;
+                }
+
+                const permissionResult = confirm("هل تسمح للتطبيق بالوصول إلى موقعك لتحديد أوقات الصلاة تلقائياً؟");
+                if (permissionResult) {
+                    resolve(true);
+                } else {
+                    // إذا رفض المستخدم، نختار مدينة افتراضية
+                    document.getElementById('city-select').value = 'Riyadh';
+                    resolve(false);
+                }
+            });
+        }
+
+        // التهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', async () => {
+            // تحميل آخر مدينة مختارة
+            const savedCity = localStorage.getItem('selectedCity');
+            if (savedCity) {
+                document.getElementById('city-select').value = savedCity;
+            }
+
+            // إذا كان التحديد التلقائي، نطلب إذن الموقع
+            if (document.getElementById('city-select').value === 'auto') {
+                await requestLocationPermission();
+            }
+
+            // جلب أوقات الصلاة
+            await fetchPrayerTimesFromAPI(document.getElementById('city-select').value);
+            
+            // بدء التحديثات
+            setInterval(updateCurrentTime, 1000);
+            setInterval(updateCountdown, 1000);
+        });
+
+        // عند تغيير المدينة
+        document.getElementById('city-select').addEventListener('change', function() {
+            const selectedCity = this.value;
+            localStorage.setItem('selectedCity', selectedCity);
+            fetchPrayerTimesFromAPI(selectedCity);
+        });
+
+        const CITIES = {
+            "Al-Mithnab": { name: "المذنب", country: "Saudi Arabia" },
+            "Riyadh": { name: "الرياض", country: "Saudi Arabia" },
+            "Jeddah": { name: "جدة", country: "Saudi Arabia" },
+            "Dammam": { name: "الدمام", country: "Saudi Arabia" },
+            "Mecca": { name: "مكة المكرمة", country: "Saudi Arabia" },
+            "Medina": { name: "المدينة المنورة", country: "Saudi Arabia" },
+            "Abha": { name: "أبها", country: "Saudi Arabia" }
+        };
+
+        // Athkar
+        const morningAthkar = [
+            {
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+( اللَّهُ لا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لا تَأْخُذُهُ سِنَةٌ وَلا نَوْمٌ لَهُ مَا فِي السَّمَوَاتِ وَمَا فِي الأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَوَاتِ وَالأَرْضَ وَلا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ ) [البقرة:255]`,  
+                count: 1
+            },
+            { 
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+قُلۡ هُوَ ٱللَّهُ أَحَدٌ (1)
+ٱللَّهُ ٱلصَّمَدُ (2)
+لَمۡ يَلِدۡ وَلَمۡ يُولَدۡ (3)
+وَلَمۡ يَكُن لَّهُۥ كُفُوًا أَحَدُۢ (4)
+(سورة الإخلاص)`, 
+                count: 3 
+            },
+            { 
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+قُلۡ أَعُوذُ بِرَبِّ ٱلۡفَلَقِ (1)
+مِن شَرِّ مَا خَلَقَ (2)
+وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ (3)
+وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِي ٱلۡعُقَدِ (4)
+وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ (5)
+(سورة الفلق)`, 
+                count: 3 
+            },
+            { 
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+قُلۡ أَعُوذُ بِرَبِّ ٱلنَّاسِ (1)
+مَلِكِ ٱلنَّاسِ (2)
+إِلَٰهِ ٱلنَّاسِ (3)
+مِن شَرِّ ٱلۡوَسۡوَاسِ ٱلۡخَنَّاسِ (4)
+ٱلَّذِي يُوَسۡوِسُ فِي صُدُورِ ٱلنَّاسِ (5)
+مِنَ ٱلۡجِنَّةِ وَٱلنَّاسِ (6)
+(سورة الناس)`, 
+                count: 3 
+            },
+            { text: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لله، وَالْحَمْدُ لله لَا إِلَهَ إِلَّا اللهُ، وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِا اليومِ وَخَيْرَ مَا بَعْدَه، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِا اليومِ وَشَرِّ مَا بَعْدَه، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.", count: 1 },
+            { text: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ.", count: 1 },
+            { text: "اللَّهُمَّ أَنْتَ رَبِّي، لاَ إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.", count: 1 },
+            { text: "اللَّهُمَّ إنِّي أصْبَحْتُ أُشْهِدُكَ، وأُشْهِدُ حَمَلَةَ عَرْشِكَ، ومَلائِكَتَكَ، وجَميْعَ خَلْقِكَ، أنَّكَ أنْتَ اللهُ لا إلَهَ إلاَّ أنْتَ وَحْدَكَ لا شَرِيْكَ لَكَ، وأنَّ مُحَمَّدًا عَبْدُكَ ورَسُولُكَ.", count: 4 },
+            { text: "اللهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ، فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.", count: 1 },
+            { text: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالْفَقْرِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَهَ إِلَّا أَنْتَ.", count: 3 },
+            { text: "حَسْبِيَ الله لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ، وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.", count: 7 },
+            { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.", count: 1 },
+            { text: "اللَّهُمَّ عَالِمَ الغَيْبِ وَالشَّهَادَةِ، فَاطِرَ السَّمَوَاتِ وَالأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ.", count: 1 },
+            { text: "بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ، فِي الْأَرْضِ، وَلَا فِي السَّمَاءِ، وَهُوَ السَّمِيعُ الْعَلِيمُ.", count: 3 },
+            { text: "رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا.", count: 3 },
+			{ text: "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ.", count: 1 },
+            { text: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لله رَبِّ الْعَالَمِينَ، اللهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ فَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ.", count: 1 },
+            { text: "أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ.", count: 1 },
+            { text: "أَصْبَحْتُ أُثْنِيَ عَلَيْكَ حَمْدًا، وَأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللهُ.", count: 3 },
+            { text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الهَمِّ وَالحَزَنِ، وَالعَجْزِ وَالكَسَلِ، وَالبُخْلِ وَالجُبْنِ، وَضَلَعِ الدَّيْنِ، وَغَلَبَةِ الرِّجَالِ.", count: 1 },
+            { text: "سُبْحَانَ اللهِ وَبِحَمْدِهِ، عَدَدَ خَلْقِهِ وَرِضَا نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ.", count: 3 },
+            { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا.", count: 1 },
+            { text: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ.", count: 100 },
+            { text: "سُبْحَانَ اللهِ وَبِحَمْدِهِ.", count: 100 },
+            { text: "سُبْحَانَ الله.", count: 100 },
+            { text: "الْحَمْدُ لِلَّه.", count: 100 },
+            { text: "اللهُ أَكْبَر.", count: 100 },
+            { text: "لاَ إِلَهَ إِلَّا الله، وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.", count: 100 },
+            { text: "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ.", count: 10 }
+        ];
+
+        const eveningAthkar = [
+            {
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+( اللَّهُ لا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لا تَأْخُذُهُ سِنَةٌ وَلا نَوْمٌ لَهُ مَا فِي السَّمَوَاتِ وَمَا فِي الأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَوَاتِ وَالأَرْضَ وَلا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ ) [البقرة:255]`,  
+                count: 1
+            },
+            { 
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+قُلۡ هُوَ ٱللَّهُ أَحَدٌ (1)
+ٱللَّهُ ٱلصَّمَدُ (2)
+لَمۡ يَلِدۡ وَلَمۡ يُولَدۡ (3)
+وَلَمۡ يَكُن لَّهُۥ كُفُوًا أَحَدُۢ (4)
+(سورة الإخلاص)`, 
+                count: 3 
+            },
+            { 
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+قُلۡ أَعُوذُ بِرَبِّ ٱلۡفَلَقِ (1)
+مِن شَرِّ مَا خَلَقَ (2)
+وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ (3)
+وَمِن شَرِّ ٱلنَّفَّٰثَٰتِ فِي ٱلۡعُقَدِ (4)
+وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ (5)
+(سورة الفلق)`, 
+                count: 3 
+            },
+            { 
+                text: `بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
+
+قُلۡ أَعُوذُ بِرَبِّ ٱلنَّاسِ (1)
+مَلِكِ ٱلنَّاسِ (2)
+إِلَٰهِ ٱلنَّاسِ (3)
+مِن شَرِّ ٱلۡوَسۡوَاسِ ٱلۡخَنَّاسِ (4)
+ٱلَّذِي يُوَسۡوِسُ فِي صُدُورِ ٱلنَّاسِ (5)
+مِنَ ٱلۡجِنَّةِ وَٱلنَّاسِ (6)
+(سورة الناس)`, 
+                count: 3 
+            },
+            { text: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لله، وَالْحَمْدُ لله لَا إِلَهَ إِلَّا اللهُ، وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِا الليلةِ وَخَيْرَ مَا بَعْدَها، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِا الليلةِ وَشَرِّ مَا بَعْدَها، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.", count: 1 },
+            { text: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ المصير.", count: 1 },
+            { text: "اللَّهُمَّ أَنْتَ رَبِّي، لاَ إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لاَ يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.", count: 1 },
+            { text: "اللَّهُمَّ إنِّي أَمْسَيْتُ أُشْهِدُكَ، وأُشْهِدُ حَمَلَةَ عَرْشِكَ، ومَلائِكَتَكَ، وجَميْعَ خَلْقِكَ، أنَّكَ أنْتَ اللهُ لا إلَهَ إلاَّ أنْتَ وَحْدَكَ لا شَرِيْكَ لَكَ، وأنَّ مُحَمَّدًا عَبْدُكَ ورَسُولُكَ.", count: 4 },
+            { text: "اللهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ، فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.", count: 1 },
+            { text: "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ، وَالْفَقْرِ، اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَهَ إِلَّا أَنْتَ.", count: 3 },
+            { text: "حَسْبِيَ الله لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ، وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.", count: 7 },
+            { text: "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.", count: 1 },
+            { text: "اللَّهُمَّ عَالِمَ الغَيْبِ وَالشَّهَادَةِ، فَاطِرَ السَّمَوَاتِ وَالأَرْضِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ.", count: 1 },
+            { text: "بِسْمِ اللهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ، فِي الْأَرْضِ، وَلَا فِي السَّمَاءِ، وَهُوَ السَّمِيعُ الْعَلِيمُ.", count: 3 },
+            { text: "رَضِيتُ بِاللهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا.", count: 3 },
+            { text: "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ.", count: 1 },
+            { text: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لله رَبِّ الْعَالَمِينَ، اللهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذِهِ الليلةِ فَتْحَها وَنَصْرَها وَنُورَها وَبَرَكَتَها وَهُدَاها، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهَا وَشَرِّ مَا بَعْدَهَا.", count: 1 },
+            { text: "أَمْسَيْنَا عَلَى فِطْرَةِ الْإِسْلَامِ وَعلى كَلِمَةِ الْإِخْلَاصِ، وَعلى دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ، وَعلى مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا، وَمَا كَانَ مِنَ الْمُشْرِكِينَ.", count: 1 },
+            { text: "أَعُوذُ بِكَلِمَاتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.", count: 3 },
+            { text: "أَمْسَيْتُ أُثْنِيَ عَلَيْكَ حَمْدًا، وَأَشْهَدُ أَنْ لَا إِلَهَ إِلَّا اللهُ.", count: 3 },
+            { text: "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الهَمِّ وَالحَزَنِ، وَالعَجْزِ وَالكَسَلِ، وَالبُخْلِ وَالجُبْنِ، وَضَلَعِ الدَّيْنِ، وَغَلَبَةِ الرِّجَالِ.", count: 1 },
+            { text: "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ.", count: 100 },
+            { text: "سُبْحَانَ اللهِ وَبِحَمْدِهِ.", count: 100 },
+            { text: "سُبْحَانَ الله.", count: 100 },
+            { text: "الْحَمْدُ لِلَّه.", count: 100 },
+            { text: "اللهُ أَكْبَر.", count: 100 },
+            { text: "لاَ إِلَهَ إِلَّا الله، وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.", count: 100 },
+            { text: "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ.", count: 10 }
+        ];
+
+        let currentAthkar = [];
+        let currentThikrIndex = 0;
+        let currentRepetition = 0;
+        let athkarHistory = [];
+
+        const athkarOptions = document.querySelectorAll('.athkar-option');
+        
+        // عند اختيار الأذكار (صباح/مساء/قرآن)
+        athkarOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                athkarOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                
+                const selectedType = option.getAttribute('data-time');
+                
+                if (selectedType === 'morning' || selectedType === 'evening') {
+                    // إظهار محتوى الأذكار وإخفاء القرآن
+                    document.getElementById('athkar-content').style.display = 'block';
+                    document.getElementById('quran-tabs').style.display = 'none';
+                    
+                    // تعيين الأذكار المناسبة
+                    currentAthkar = selectedType === 'morning' ? morningAthkar : eveningAthkar;
+                    
+                    // فتح صفحة الأذكار الكاملة
+                    openAthkarFullscreen(selectedType === 'morning' ? 'أذكار الصباح' : 'أذكار المساء');
+                    
+} else if (selectedType === 'quran') {
+    document.getElementById('athkar-content').style.display = 'none';
+    document.getElementById('quran-tabs').style.display = 'block';
+    
+    // هذه الإضافة الحاسمة
+    setTimeout(() => {
+        initializeQuran(); // تهيئة القرآن مباشرة بعد الفتح
+        
+        // إصلاح التمرير
+        document.body.style.overflow = 'auto';
+        document.body.style.position = 'static';
+    }, 50);
+}
+                
+                // إعادة تعيين العدادات
+                currentThikrIndex = 0;
+                currentRepetition = 0;
+                athkarHistory = [];
+            });
+        });
+
+        function updateThikrDisplay() {
+            if (currentAthkar.length === 0) {
+                document.getElementById('thikr-text').textContent = 'اختر وقت الأذكار (صباح/مساء) لبدء الأذكار';
+                document.getElementById('current-thikr').textContent = '0/0';
+                document.getElementById('thikr-current-count').textContent = '0';
+                document.getElementById('thikr-circle-progress').style.background = 'conic-gradient(var(--primary-color) 0%, #e0e0e0 0%)';
+                document.getElementById('progress-bar').style.width = '0%';
+                document.getElementById('repetition-count').textContent = 'التكرار: 0/0';
+                return;
+            }
+            
+            const thikr = currentAthkar[currentThikrIndex];
+            document.getElementById('thikr-text').textContent = thikr.text;
+            document.getElementById('current-thikr').textContent = `${currentThikrIndex + 1}/${currentAthkar.length}`;
+            document.getElementById('thikr-current-count').textContent = currentRepetition;
+            document.getElementById('repetition-count').textContent = `التكرار: ${currentRepetition}/${thikr.count}`;
+            
+            // تحديث دائرة التكرار
+            const circleProgress = (currentRepetition / thikr.count) * 360;
+            document.getElementById('thikr-circle-progress').style.background = `conic-gradient(var(--primary-color) ${circleProgress}deg, #e0e0e0 ${circleProgress}deg)`;
+            
+            // تحديث شريط التقدم العام
+            const overallProgress = ((currentThikrIndex + (currentRepetition / thikr.count)) / currentAthkar.length) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = `${overallProgress}%`;
+            
+            // إضافة تأثير الاكتمال إذا كان هذا هو التكرار الأخير
+            if (currentRepetition === thikr.count) {
+                progressBar.classList.add('complete');
+            } else {
+                progressBar.classList.remove('complete');
+            }
+        }
+
+        document.getElementById('thikr-circle').addEventListener('click', async function() {
+            if (currentAthkar.length === 0) return;
+            
+            const thikr = currentAthkar[currentThikrIndex];
+            const circle = this;
+            
+            // تأثير النقر
+            circle.classList.add('complete-animation');
+            setTimeout(() => circle.classList.remove('complete-animation'), 200);
+            
+            // زيادة العداد مع التحقق من عدم تجاوز الحد الأقصى
+            if (currentRepetition < thikr.count) {
+                athkarHistory.push({index: currentThikrIndex, repetition: currentRepetition});
+                currentRepetition++;
+                updateThikrDisplay();
+            }
+            
+            // التحقق من اكتمال التكرارات
+            if (currentRepetition >= thikr.count) {
+                // إيقاف مؤقت قصير قبل الانتقال للذكر التالي
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                currentRepetition = 0;
+                currentThikrIndex++;
+                
+                if (currentThikrIndex >= currentAthkar.length) {
+                    showCompletionMessage();
+                    currentThikrIndex = 0;
+                }
+                
+                document.getElementById('thikr-circle-progress').style.background = 'conic-gradient(var(--primary-color) 0%, #e0e0e0 0%)';
+                updateThikrDisplay();
+            }
+        });
+
+        function showCompletionMessage() {
+            const activeOption = document.querySelector('.athkar-option.active');
+            const athkarType = activeOption ? activeOption.querySelector('span').textContent : 'الأذكار';
+            
+            const celebration = document.getElementById('celebration');
+            celebration.querySelector('h2').textContent = 'أحسنت! 👏';
+            celebration.querySelector('p:nth-child(2)').textContent = `لقد أكملت جميع ${athkarType}`;
+            celebration.querySelector('p:nth-child(3)').textContent = 'اذكرني بدعوة ❤️';
+            
+            celebration.style.display = 'flex';
+            
+            // اهتزاز إذا كان الجهاز يدعم ذلك
+            if (navigator.vibrate) {
+                navigator.vibrate([200, 100, 200, 100, 200]);
+            }
+            
+            // إخفاء الرسالة بعد 3 ثواني
+            setTimeout(() => {
+                celebration.style.display = 'none';
+            }, 4000);
+        }
+
+        document.getElementById('prev-thikr-btn').addEventListener('click', () => {
+            if (athkarHistory.length === 0) return;
+            
+            const prevState = athkarHistory.pop();
+            currentThikrIndex = prevState.index;
+            currentRepetition = prevState.repetition;
+            updateThikrDisplay();
+        });
+
+        document.getElementById('reset-athkar').addEventListener('click', () => {
+            currentThikrIndex = 0;
+            currentRepetition = 0;
+            athkarHistory = [];
+            updateThikrDisplay();
+        });
+
+        // Water Counter
+        let waterConsumed = 0;
+        let cupsArray = [];
+        let goalCompletionDate = null;
+
+        function createCups() {
+            const container = document.getElementById('multi-cups-container');
+            container.innerHTML = '';
+            
+            const goal = parseInt(document.getElementById('water-goal').value);
+            const cupSize = parseInt(document.getElementById('cup-size').value);
+            const cupsRequired = Math.ceil(goal / cupSize);
+            
+            // إذا لم تكن هناك بيانات محفوظة، أنشئ مصفوفة جديدة
+            if (cupsArray.length === 0) {
+                cupsArray = Array(cupsRequired).fill(true);
+            }
+            
+            cupsArray.forEach((isFull, index) => {
+                const cup = document.createElement('img');
+                cup.src = isFull ? 'cup-full.png' : 'cup-empty.png';
+                cup.alt = `كوب ${index + 1}`;
+                cup.className = 'water-cup';
+                cup.dataset.index = index;
+                
+                cup.addEventListener('click', () => {
+                    const cupSize = parseInt(document.getElementById('cup-size').value);
+                    const goal = parseInt(document.getElementById('water-goal').value);
+                    
+                    if (cupsArray[index]) {
+                        cupsArray[index] = false;
+                        waterConsumed = Math.min(waterConsumed + cupSize, goal);
+                        cup.src = 'cup-empty.png';
+                        cup.classList.add('empty');
+                        
+                        if (navigator.vibrate) navigator.vibrate(50);
+                        
+                        updateWaterCalculation();
+                        saveWaterData(); // حفظ التغييرات
+                    }
+                });
+                
+                container.appendChild(cup);
+            });
+        }
+
+        function updateWaterCalculation() {
+            const goal = parseInt(document.getElementById('water-goal').value);
+            const cupSize = parseInt(document.getElementById('cup-size').value);
+            
+            const requiredCups = (goal / cupSize).toFixed(1);
+            const consumedCups = (waterConsumed / cupSize).toFixed(1);
+            
+            document.getElementById('water-required').textContent = requiredCups;
+            document.getElementById('water-consumed').textContent = waterConsumed;
+            document.getElementById('water-remaining').textContent = Math.max(0, goal - waterConsumed);
+            document.getElementById('water-cups').textContent = consumedCups;
+            
+            const progress = Math.min(100, (waterConsumed / goal) * 100);
+            document.getElementById('water-filled').style.width = `${progress}%`;
+            
+            // التحقق من اكتمال الهدف اليوم لأول مرة
+            if (waterConsumed >= goal) {
+                document.getElementById('water-filled').classList.add('complete');
+                
+                // تحقق مما إذا كان الهدف قد اكتمل اليوم لأول مرة
+                const today = new Date().toDateString();
+                const lastCompletionDate = localStorage.getItem('lastGoalCompletionDate');
+                
+                if (lastCompletionDate !== today) {
+                    celebrateAchievement(); // عرض الرسالة
+                    localStorage.setItem('lastGoalCompletionDate', today); // حفظ تاريخ اليوم
+                }
+            } else {
+                document.getElementById('water-filled').classList.remove('complete');
+            }
+        }
+
+        function celebrateAchievement() {
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration-popup';
+            celebration.innerHTML = `
+                <h3>أحسنت! لقد أكملت هدفك اليومي</h3>
+                <p>${document.getElementById('water-consumed').textContent} مل من الماء</p>
+            `;
+            document.body.appendChild(celebration);
+            
+            setTimeout(() => {
+                celebration.remove();
+            }, 3000);
+        }
+
+        // أحداث التغيير
+        document.getElementById('water-goal').addEventListener('change', () => {
+            waterConsumed = 0;
+            cupsArray = [];
+            createCups();
+            updateWaterCalculation();
+            saveWaterData();
+        });
+
+        document.getElementById('cup-size').addEventListener('change', () => {
+            waterConsumed = 0;
+            cupsArray = [];
+            createCups();
+            updateWaterCalculation();
+            saveWaterData();
+        });
+
+        // Tasbeeh Counter
+        let tasbeehCount = 0;
+        const tasbeehDisplay = document.getElementById('tasbeeh-count');
+        
+        document.getElementById('tasbeeh-add').addEventListener('click', () => {
+            tasbeehCount++;
+            tasbeehDisplay.textContent = tasbeehCount;
+            
+            if (tasbeehCount === 100) {
+                document.getElementById('celebration').style.display = 'flex';
+                setTimeout(() => {
+                    document.getElementById('celebration').style.display = 'none';
+                }, 1500);
+                
+                // Vibrate if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate([200, 100, 200, 100, 200]);
+                }
+            }
+        });
+        
+        document.getElementById('tasbeeh-reset').addEventListener('click', () => {
+            tasbeehCount = 0;
+            tasbeehDisplay.textContent = tasbeehCount;
+        });
+        
+        document.getElementById('tasbeeh-undo').addEventListener('click', () => {
+            if (tasbeehCount > 0) {
+                tasbeehCount--;
+                tasbeehDisplay.textContent = tasbeehCount;
+            }
+        });
+        
+        // دالة إعادة ملء الأكواب
+        function refillCups() {
+            const goal = parseInt(document.getElementById('water-goal').value);
+            const cupSize = parseInt(document.getElementById('cup-size').value);
+            
+            waterConsumed = 0;
+            cupsArray = cupsArray.map(() => true);
+            
+            // مسح تاريخ اكتمال الهدف السابق (لإظهار الرسالة مرة أخرى عند اكتماله)
+            localStorage.removeItem('lastGoalCompletionDate');
+            
+            document.querySelectorAll('.water-cup').forEach((cup, index) => {
+                cup.src = 'cup-full.png';
+                cup.classList.remove('empty');
+            });
+            
+            updateWaterCalculation();
+            saveWaterData();
+        }
+        
+        // دالة لحفظ البيانات في localStorage
+        function saveWaterData() {
+            const waterData = {
+                consumed: waterConsumed,
+                cups: cupsArray,
+                goal: parseInt(document.getElementById('water-goal').value),
+                cupSize: parseInt(document.getElementById('cup-size').value)
+            };
+            localStorage.setItem('waterTrackerData', JSON.stringify(waterData));
+        }
+
+        // دالة لتحميل البيانات من localStorage
+        function loadWaterData() {
+            const savedData = localStorage.getItem('waterTrackerData');
+            if (savedData) {
+                const waterData = JSON.parse(savedData);
+                waterConsumed = waterData.consumed || 0;
+                cupsArray = waterData.cups || [];
+                document.getElementById('water-goal').value = waterData.goal || 2000;
+                document.getElementById('cup-size').value = waterData.cupSize || 300;
+            }
+            createCups();
+            updateWaterCalculation();
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadWaterData);
+        document.getElementById('refill-btn').addEventListener('click', refillCups);
+        
+        // متغيرات إضافية للوضع الكامل
+        let isFullscreenMode = false;
+
+        // تحديث العرض في الوضع الكامل
+        function updateFullscreenThikrDisplay() {
+            if (currentAthkar.length === 0) return;
+            
+            const thikr = currentAthkar[currentThikrIndex];
+            document.getElementById('fullscreen-thikr-text').textContent = thikr.text;
+            document.getElementById('fullscreen-current-thikr').textContent = `${currentThikrIndex + 1}/${currentAthkar.length}`;
+            document.getElementById('fullscreen-thikr-current-count').textContent = currentRepetition;
+            document.getElementById('fullscreen-repetition-count').textContent = `التكرار: ${currentRepetition}/${thikr.count}`;
+            
+            const circleProgress = (currentRepetition / thikr.count) * 360;
+            document.getElementById('fullscreen-thikr-circle-progress').style.background = 
+                `conic-gradient(var(--primary-color) ${circleProgress}deg, #e0e0e0 ${circleProgress}deg)`;
+            
+            const overallProgress = (currentThikrIndex / currentAthkar.length) * 100;
+            document.getElementById('fullscreen-progress-bar').style.width = `${overallProgress}%`;
+        }
+
+        document.getElementById('fullscreen-thikr-circle').addEventListener('click', async function() {
+            if (currentAthkar.length === 0) return;
+            
+            const thikr = currentAthkar[currentThikrIndex];
+            const circle = this;
+            
+            circle.classList.add('complete-animation');
+            setTimeout(() => circle.classList.remove('complete-animation'), 200);
+            
+            // زيادة العداد
+            currentRepetition++;
+            
+            // تحديث الواجهة
+            updateFullscreenThikrDisplay();
+            
+            // التحقق إذا اكتملت التكرارات المطلوبة لهذا الذكر
+            if (currentRepetition >= thikr.count) {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                
+                // حفظ الحالة قبل التغيير
+                athkarHistory.push({
+                    index: currentThikrIndex,
+                    repetition: currentRepetition
+                });
+                
+                // الانتقال للذكر التالي
+                currentThikrIndex++;
+                currentRepetition = 0;
+                
+                if (currentThikrIndex >= currentAthkar.length) {
+                    showCompletionMessage();
+                    currentThikrIndex = 0;
+                }
+                
+                // إعادة ضبط الدائرة للذكر الجديد
+                document.getElementById('fullscreen-thikr-circle-progress').style.background = 
+                    'conic-gradient(var(--primary-color) 0%, #e0e0e0 0%)';
+                updateFullscreenThikrDisplay();
+            }
+        });
+
+        // زر الذكر السابق
+        document.getElementById('fullscreen-prev-thikr-btn').addEventListener('click', () => {
+            // إذا لم يكن هناك تاريخ للعودة إليه
+            if (athkarHistory.length === 0) return;
+            
+            // استرجع آخر حالة من التاريخ
+            const prevState = athkarHistory.pop();
+            currentThikrIndex = prevState.index;
+            currentRepetition = prevState.repetition;
+            
+            // تحديث الواجهة بالذكر السابق
+            updateFullscreenThikrDisplay();
+        });
+
+        // زر إعادة الضبط
+        document.getElementById('fullscreen-reset-athkar').addEventListener('click', () => {
+            // إعادة كل القيم للصفر
+            currentThikrIndex = 0;
+            currentRepetition = 0;
+            athkarHistory = []; // مسح التاريخ
+            
+            // إعادة ضبط الدائرة
+            document.getElementById('fullscreen-thikr-circle-progress').style.background = 
+                'conic-gradient(var(--primary-color) 0%, #e0e0e0 0%)';
+            
+            // تحديث الواجهة
+            updateFullscreenThikrDisplay();
+        });
+
+        // زر العودة للصفحة الرئيسية
+        document.getElementById('back-to-main').addEventListener('click', () => {
+            // إخفاء الوضع الكامل
+            document.getElementById('athkar-fullscreen').style.display = 'none';
+            isFullscreenMode = false;
+            
+            // تحديث الواجهة الرئيسية إذا لزم الأمر
+            updateThikrDisplay();
+        });
+        function initializeTabs() {
+    // إخفاء جميع المحتويات
+    tabContents.forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+    });
+
+    // تحديد تبويب "أوقات الصلاة" كـ "التبويب النشط" (أول تبويب)
+    const activeTab = document.getElementById("prayer");
+
+    // عرض محتوى تبويب "أوقات الصلاة"
+    if (activeTab) {
+        activeTab.style.display = 'block';
+        activeTab.classList.add('active');
+    }
+
+    // تحديث التبويبات النشطة
+    tabs.forEach(tab => tab.classList.remove('active'));
+    const activeTabElement = document.querySelector('.tab[data-tab="prayer"]');
+    if (activeTabElement) {
+        activeTabElement.classList.add('active');
+    }
+
+    // حفظ التبويب الحالي (إذا كنت بحاجة لذلك)
+    saveLastTab("prayer");
+}
+
+        // عند فتح صفحة الأذكار (إضافة كلاس لمنع التمرير)
+function openAthkarFullscreen(title = 'الأذكار') {
+    document.body.classList.add('athkar-active');
+    document.getElementById('athkar-fullscreen').style.display = 'block';
+    document.getElementById('fullscreen-athkar-title').textContent = title;
+    isFullscreenMode = true;
+    updateFullscreenThikrDisplay();
+}
+
+        // عند إغلاق صفحة الأذكار (إزالة كلاس لتمكين التمرير)
+function closeAthkarFullscreen() {
+    const fullscreenElement = document.getElementById('athkar-fullscreen');
+    if (fullscreenElement) {
+        fullscreenElement.style.display = 'none';
+    }
+    
+    // إعادة تعيين جميع خصائص التمرير
+    document.body.style.position = '';
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+    document.body.style.width = '';
+    document.body.style.height = '';
+    
+    // إزالة الكلاس النشط
+    document.body.classList.remove('athkar-active');
+    
+    // إعادة تحميل الصفحة بلطف (بدون تأثير مرئي)
+    setTimeout(() => {
+        window.scrollTo(0, 0);
+        document.body.style.overflow = 'auto';
+    }, 50);
+    
+    // إزالة التنشيط من الأزرار
+    document.querySelectorAll('.athkar-option').forEach(option => {
+        option.classList.remove('active');
+    });
+}
+ 
+        // دالة لتبديل تبويبات القرآن
+function switchQuranTab(tabId) {
+    // إزالة النشاط من جميع التبويبات
+    document.querySelectorAll('.quran-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // إخفاء جميع المحتويات
+    document.querySelectorAll('.quran-content').forEach(content => {
+        content.style.display = 'none';
+        content.classList.remove('active');
+    });
+
+    // إضافة النشاط للتبويب المحدد
+    const activeTab = document.querySelector(`.quran-tab[data-tab="${tabId}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+
+    // إظهار المحتوى المحدد
+    const activeContent = document.getElementById(tabId);
+    if (activeContent) {
+        activeContent.style.display = 'block';
+        activeContent.classList.add('active');
+    }
+}
+
+function initializeQuran() {
+    const firstTab = document.querySelector('.quran-tab');
+    if (firstTab) {
+        firstTab.classList.add('active');
+        const tabId = firstTab.getAttribute('data-tab');
+        switchQuranTab(tabId);
+        
+        // إظهار الصور بشكل قسري
+        setTimeout(() => {
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) {
+                activeContent.style.display = 'block';
+                activeContent.querySelectorAll('img').forEach(img => {
+                    img.style.opacity = 1;
+                    img.style.visibility = 'visible';
+                });
+            }
+        }, 100);
+    }
+}
+
+        // تهيئة أحداث القرآن
+        function initQuranTabs() {
+            // أحداث التبويبات في الواجهة الرئيسية
+            document.querySelectorAll('#quran-tabs .quran-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchQuranTab(tabId);
+                });
+            });
+            
+            // أحداث التبويبات في الوضع الكامل
+            document.querySelectorAll('#quran-fullscreen .quran-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchQuranTab(tabId);
+                });
+            });
+           
+        }
+
+        // تهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', initQuranTabs);
+		document.addEventListener('DOMContentLoaded', function() {
+    // ... الكود الحالي ...
+    
+    // تهيئة قرآنية أولية
+    if (document.querySelector('.quran-tab')) {
+        document.querySelector('.quran-tab').classList.add('active');
+        switchQuranTab('sura-al-mulk');
+    }
+});
+/**************** حفظ واسترجاع تقدم الأذكار ****************/
+
+function saveAthkarProgress(type, index, count) {
+    localStorage.setItem("athkarProgress", JSON.stringify({ type, index, count }));
+}
+
+function loadAthkarProgress() {
+    const saved = localStorage.getItem("athkarProgress");
+    return saved ? JSON.parse(saved) : null;
+}
+
+function restoreAthkarProgress(selectedType) {
+    const saved = loadAthkarProgress();
+    if (saved && saved.type === selectedType) {
+        currentIndex = saved.index;
+        repetitionCount = saved.count;
+        showThikr(currentIndex);
+
+        // رجّع العداد اللي يظهر على الدائرة
+        document.getElementById("thikr-current-count").textContent = repetitionCount;
+        document.getElementById("fullscreen-thikr-current-count").textContent = repetitionCount;
+    } else {
+        currentIndex = 0;
+        repetitionCount = 0;
+        showThikr(currentIndex);
+
+        document.getElementById("thikr-current-count").textContent = 0;
+        document.getElementById("fullscreen-thikr-current-count").textContent = 0;
+    }
+}
+
+function updateAthkarProgress() {
+    if (typeof selectedType !== "undefined") {
+        saveAthkarProgress(selectedType, currentIndex, repetitionCount);
+    }
+}
+
+/**************** دمج مع الكود الحالي ****************/
+
+// عند تحميل الصفحة، إذا فيه تقدم محفوظ رجّعه
+document.addEventListener("DOMContentLoaded", () => {
+    const saved = loadAthkarProgress();
+    if (saved) {
+        selectedType = saved.type;
+        restoreAthkarProgress(selectedType);
+    }
+});
+
+// عند اختيار نوع الأذكار (صباح أو مساء)
+document.querySelectorAll(".athkar-option").forEach(option => {
+    option.addEventListener("click", () => {
+        selectedType = option.getAttribute("data-time");
+        restoreAthkarProgress(selectedType);
+    });
+});
+
+// ----------- التبويب الرئيسي للأذكار -----------
+
+document.getElementById("thikr-circle").addEventListener("click", () => {
+    repetitionCount++;
+    document.getElementById("thikr-current-count").textContent = repetitionCount;
+    updateAthkarProgress();
+});
+
+document.getElementById("prev-thikr-btn").addEventListener("click", () => {
+    if (currentIndex > 0) {
+        currentIndex--;
+        repetitionCount = 0;
+        showThikr(currentIndex);
+        document.getElementById("thikr-current-count").textContent = 0;
+        updateAthkarProgress();
+    }
+});
+
+document.getElementById("reset-athkar").addEventListener("click", () => {
+    currentIndex = 0;
+    repetitionCount = 0;
+    showThikr(currentIndex);
+    document.getElementById("thikr-current-count").textContent = 0;
+    updateAthkarProgress();
+});
+
+// ----------- شاشة الـ Fullscreen -----------
+
+document.getElementById("fullscreen-thikr-circle").addEventListener("click", () => {
+    repetitionCount++;
+    document.getElementById("fullscreen-thikr-current-count").textContent = repetitionCount;
+    updateAthkarProgress();
+});
+
+document.getElementById("fullscreen-prev-thikr-btn").addEventListener("click", () => {
+    if (currentIndex > 0) {
+        currentIndex--;
+        repetitionCount = 0;
+        showThikr(currentIndex);
+        document.getElementById("fullscreen-thikr-current-count").textContent = 0;
+        updateAthkarProgress();
+    }
+});
+
+document.getElementById("fullscreen-reset-athkar").addEventListener("click", () => {
+    currentIndex = 0;
+    repetitionCount = 0;
+    showThikr(currentIndex);
+    document.getElementById("fullscreen-thikr-current-count").textContent = 0;
+    updateAthkarProgress();
+});
+
+// كود لفتح تبويب الماء عند الضغط على الرابط من index.html
+(function() {
+    // التحقق من وجود #water في الرابط
+    if (window.location.hash === '#water' || window.location.href.includes('water')) {
+        // الانتظار قليلاً حتى يتم تحميل الصفحة بالكامل
+        setTimeout(function() {
+            // البحث عن تبويب الماء
+            const waterTab = document.querySelector('.tab[data-tab="water"]');
+            if (waterTab) {
+                // محاكاة الضغط على تبويب الماء
+                waterTab.click();
+                
+                // تمرير الصفحة قليلاً للأعلى
+                setTimeout(function() {
+                    const waterContent = document.getElementById('water');
+                    if (waterContent) {
+                        waterContent.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 100);
+            } else {
+                // محاولة بديلة: البحث عن التبويب الذي يحتوي على نص "عداد الماء"
+                const tabs = document.querySelectorAll('.tab');
+                for (let tab of tabs) {
+                    if (tab.textContent.includes('الماء') || tab.textContent.includes('عداد')) {
+                        tab.click();
+                        break;
+                    }
+                }
+            }
+            
+            // إزالة #water من الرابط لتنظيف الشريط
+            if (window.location.hash === '#water') {
+                history.pushState("", document.title, window.location.pathname + window.location.search);
+            }
+        }, 500);
+    }
+})();
+
+    </script>
+</body>
+<div style="
+    text-align: center;
+    background-color: black;
+    color: white;
+    padding: 8px 0;
+    font-size: 10px;
+    direction: rtl;
+    margin-top: auto;
+">
+    صُنِعَ بحب بواسطة عماد ❤️<br>لا تنسوني من خالص دعائكم ❤
+</div>
+</html>
