@@ -89,6 +89,7 @@
       padding:20px;
       box-shadow:0 4px 12px rgba(0,0,0,.1);
       margin:50px auto;
+	  overflow: visible;
       max-width:600px;
       text-align:center;
     }
@@ -97,11 +98,8 @@
   line-height: 1.8;
   margin-bottom: 20px;
   white-space: pre-wrap;
-  height: 250px;        /* ارتفاع ثابت */
-  overflow-y: auto;     /* شريط تمرير لو النص طويل */
-  user-select: none;    /* يمنع النسخ */
-  -webkit-user-select: none; /* لمتصفحات Safari */
-  -moz-user-select: none;    /* لفايرفوكس */
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .controls {
@@ -222,6 +220,7 @@
             margin-bottom: 20px;
         }
 		
+		
   </style>
 </head>
 <body>
@@ -290,7 +289,7 @@
   <!-- شاشة كاملة -->
   <div class="fullscreen" id="fullscreen">
     <button class="back-btn" id="fs-back">العودة</button>
-    <div class="thikr-box">
+    <div class="thikr-box" id="thikr-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:#2e7d32;font-weight:bold">
   <span id="fs-total-azkar"></span>
   <h2 id="fs-title" style="margin:0;text-align:center;flex:1">الأذكار</h2>
@@ -307,6 +306,11 @@
       </div>
       
       <div class="thikr-text" id="fs-text">...</div>
+	  <div id="mulk-view" style="display:none">
+  <img src="sura-al-mulk-1.jpg" style="width:100%">
+  <img src="sura-al-mulk-2.jpg" style="width:100%">
+  <img src="sura-al-mulk-3.jpg" style="width:100%">
+</div>
       <div class="controls">
         <button class="btn warn" id="fs-prev">السابق</button>
         <button class="btn next" id="fs-next">التالي</button>
@@ -637,22 +641,61 @@ function render() {
   if (!currentList.length) return;
 
   let item = currentList[currentIndex];
-  fsText.textContent = item.text;
+
+  const thikrBox = document.getElementById("thikr-box");
+
+  if (currentType === "sleep" && currentIndex === 24) {
+
+    thikrBox.style.maxWidth = "100%";
+    thikrBox.style.background = "transparent";
+    thikrBox.style.boxShadow = "none";
+
+    fsText.innerHTML = `
+      <img src="sura-al-mulk-1.jpg" style="width:100%;display:block;margin-bottom:10px;">
+      <img src="sura-al-mulk-2.jpg" style="width:100%;display:block;margin-bottom:10px;">
+      <img src="sura-al-mulk-3.jpg" style="width:100%;display:block;margin-bottom:20px;">
+    `;
+
+    fsText.style.height = "auto";
+    fsText.style.overflow = "visible";
+
+    fsText.appendChild(fsCircle);
+
+    fsCircle.style.display = "flex";
+fsCircle.style.marginTop = "20px";
+fsCircle.style.marginBottom = "50px";
+let space = document.createElement("div");
+space.style.height = "30px";
+fsText.appendChild(space);
+  } else {
+
+    thikrBox.style.maxWidth = "600px";
+    thikrBox.style.background = "#fff";
+    thikrBox.style.boxShadow = "0 4px 12px rgba(0,0,0,.1)";
+
+    fsText.style.height = "250px";
+    fsText.style.overflowY = "auto";
+    fsText.textContent = item.text;
+
+    const controls = document.querySelector(".controls");
+    controls.parentNode.insertBefore(fsCircle, controls);
+
+    fsCircle.style.display = "flex";
+    fsCircle.style.margin = "0 auto";
+  }
+
   fsCircle.textContent = currentCount;
 
-  document.getElementById("fs-total-azkar").textContent = `ذكر ${currentIndex + 1} من ${currentList.length}`;
-  document.getElementById("fs-total-count").textContent = `تكرار ${currentCount}/${currentTarget}`;
+  document.getElementById("fs-total-azkar").textContent =
+    `ذكر ${currentIndex + 1} من ${currentList.length}`;
 
-  // تحديث الدائرة حسب التكرار
+  document.getElementById("fs-total-count").textContent =
+    `تكرار ${currentCount}/${currentTarget}`;
+
   updateCircleProgress();
-
-  // تحديث شريط التقدم بناءً على إجمالي الأذكار
   updateProgressBar();
-
   saveState();
 }
-
-
 function getTotalTarget() {
   return currentList.reduce((sum, item) => sum + item.count, 0);
 }
