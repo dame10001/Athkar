@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" id="themeColor" content="#f5f3ec">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>جهاز التسبيح</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+  touch-action: manipulation;
+  position: relative;
+}
+.top-buttons {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  gap: 10px;
+  z-index: 20;
+}
+.top-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  transition: 0.2s;
+}
+#resetBtn { background-color: #ff6b6b; color: white; }
+#darkModeBtn { background-color: #4a90e2; color: white; }
+#moveBtn { background-color: #f39c12; color: white; }
+
+.device {
+  background: #2c3e50;
+  border-radius: 45% / 40%;
+  width: 280px;
+  height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 40px;
+  transition: top 0.2s;
+  z-index: 10;
+}
+.screen {
+  background: #2ecc71;
+  color: black;
+  font-size: 42px;
+  font-weight: bold;
+  width: 160px;
+  height: 65px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 40px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.5);
+}
+.big-button {
+  background: radial-gradient(circle, #cccccc, #999999);
+  border-radius: 50%;
+  width: 140px;
+  height: 140px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+  transition: transform 0.1s;
+}
+.big-button:active { transform: scale(0.95); }
+
+body.dark { background: #1a1a1a; color: white; }
+body.dark .device { background: #111; }
+body.dark .screen { background: #27ae60; color: #fff; }
+
+.dialog {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 15px;
+  padding: 20px 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 50;
+}
+.dialog p {
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+.dialog button {
+  margin: 6px;
+  padding: 10px 20px;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+#moveDialog .arrow-buttons {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+#confirmReset { background:#ff6b6b; color:#fff; }
+#cancelReset { background:#777; color:#fff; }
+#savePosition { background:#2ecc71; color:#fff; }
+#closeDialog { background:#555; color:#fff; }
+</style>
+<style>@media(max-width:600px){body{padding-bottom:86px!important}.v5-bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,520px);z-index:99999;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid #ddd}.v5-bottom a{text-decoration:none;color:#444;text-align:center;font-size:11px;padding:5px}.v5-bottom a span{display:block;font-size:19px}.v5-bottom a.on{font-weight:800;background:#eaf4ea;border-radius:12px;color:#2e7d32}}@media(min-width:601px){.v5-bottom{display:none}}</style><style>@media(max-width:600px){html,body{background:#f5f3ec!important}.v5-bottom{background:rgba(255,254,249,.95)!important;border-top:1px solid rgba(16,37,31,.09)!important;box-shadow:0 -10px 35px rgba(16,37,31,.06)!important;backdrop-filter:blur(22px)!important}.v5-bottom a{color:#6d7c77!important;border-radius:14px!important}.v5-bottom a.on{background:transparent!important;color:#10251f!important;font-weight:900!important}}</style><link rel="stylesheet" href="app.css">
+<script src="auth.js"></script>
+<script>window.__authReady=AthkarAuth.require();</script><style>body{background:var(--bg)!important;padding-bottom:92px!important}.top-buttons{max-width:490px!important;margin:calc(12px + env(safe-area-inset-top,0px)) auto 18px!important;display:grid!important;grid-template-columns:repeat(3,1fr)!important;gap:8px!important;padding:0 14px!important}.top-buttons button{border:1px solid var(--line)!important;background:var(--surface)!important;color:var(--ink)!important;border-radius:14px!important;min-height:44px!important;box-shadow:none!important;font-family:Tajawal,sans-serif!important}.device{box-shadow:0 18px 45px rgba(18,42,37,.12)!important}.dialog{border-radius:22px!important}</style><style id="tas-v8">
+html,body{min-height:100%;background:var(--bg)!important}body{font-family:Tajawal,system-ui,sans-serif!important;display:block!important;height:100dvh!important;overflow:hidden!important;padding-bottom:92px!important;color:var(--ink)!important}.app{position:relative;z-index:30}.topbar{background:rgba(243,241,234,.92)!important}.topbar h1{margin-top:0!important}.top-buttons{position:relative!important;top:auto!important;right:auto!important;max-width:500px!important;margin:6px auto 0!important;padding:0 14px!important;display:grid!important;grid-template-columns:1fr 1fr 1.25fr!important;gap:8px!important;z-index:30!important}.top-buttons button{min-height:42px!important;padding:8px 10px!important;border-radius:13px!important;border:1px solid var(--line)!important;background:var(--surface)!important;color:var(--ink)!important;box-shadow:none!important;font-family:Tajawal,sans-serif!important;font-size:.74rem!important}.device{top:55%!important}.dialog{position:fixed!important;width:min(calc(100% - 32px),360px)!important;background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:24px!important;padding:22px!important;box-shadow:0 24px 65px rgba(8,25,22,.22)!important}.dialog p{font-family:Tajawal,sans-serif!important;font-size:1.02rem!important;margin:8px 0 4px!important}.dialog small{font-family:Tajawal,sans-serif!important;color:var(--muted)!important;font-size:.74rem!important;line-height:1.6!important;margin-bottom:12px!important}.dialog-icon{width:54px;height:54px;border-radius:17px;background:#ece9df;display:grid;place-items:center;font-size:1.5rem;margin:auto}.dialog-icon.danger{background:#f5e5e3;color:var(--danger)}.dialog button{font-family:Tajawal,sans-serif!important;border-radius:13px!important;min-height:42px!important}.arrow-buttons{width:100%;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;margin:12px 0!important}.arrow-buttons button{background:var(--surface2)!important;color:var(--ink)!important;margin:0!important}.dialog>#savePosition{width:100%;background:var(--brand)!important;color:white!important}.dialog>#closeDialog{width:100%;background:transparent!important;color:var(--muted)!important}.dialog>#confirmReset{width:100%;background:var(--danger)!important;color:#fff!important}.dialog>#cancelReset{width:100%;background:var(--surface2)!important;color:var(--ink)!important}body.dark{background:#101816!important;color:#f4f4ef!important}body.dark .topbar{background:rgba(16,24,22,.93)!important;color:#fff!important}body.dark .top-buttons button{background:#18221f!important;color:#f5f5ef!important;border-color:rgba(255,255,255,.08)!important}body.dark .bottom-nav{background:rgba(18,26,24,.96)!important;border-color:rgba(255,255,255,.08)!important}body.dark .bottom-nav a{color:#9fa9a5!important}body.dark .bottom-nav a.active{color:#fff!important}body.dark .dialog{background:#18211f!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}body.dark .dialog small{color:#a9b1ae!important}body.dark .dialog .arrow-buttons button,body.dark .dialog>#cancelReset{background:#222d29!important;color:#fff!important}body.dark .device{background:#0c1110!important}
+@media(max-width:600px){.device{width:270px!important;height:390px!important}.screen{width:155px!important}.top-buttons{margin-top:2px!important}}
+</style>
+<style id="tas-v9">
+@font-face{font-family:'Thmanyah Sans';src:url('thmanyahsans-Regular(1).woff2') format('woff2');font-weight:400;font-display:swap}@font-face{font-family:'Thmanyah Sans';src:url('thmanyahsans-Bold(1).woff2') format('woff2');font-weight:700 900;font-display:swap}
+body,.top-buttons button,.dialog{font-family:'Thmanyah Sans',Tajawal,system-ui,sans-serif!important}.app{min-height:0!important}
+.top-buttons{z-index:120!important;position:relative!important;pointer-events:auto!important}.top-buttons button{pointer-events:auto!important;position:relative!important;z-index:121!important}.device{z-index:20!important}.big-button{position:relative!important;z-index:25!important;pointer-events:auto!important;touch-action:manipulation!important}.screen{pointer-events:none!important}
+body.dark,html:has(body.dark){background:#0f1715!important}body.dark .app{background:#0f1715!important}body.dark{--bg:#0f1715;--surface:#18211f;--surface2:#222d29;--ink:#f4f4ef;--muted:#a9b1ae;--line:rgba(255,255,255,.08)}
+@media(max-width:600px){body{overflow:hidden!important}.top-buttons{display:grid!important;visibility:visible!important;opacity:1!important;margin-top:4px!important}.device{top:57%!important}}
+</style>
+
+<style id="tas-v10">
+html,body{width:100%;min-height:100%;background:#f5f3ec}
+body{height:100dvh!important}
+body.dark,html.tas-dark{background:#0f1715!important;color:#f4f4ef!important}
+body.dark .app,body.dark .topbar,body.dark .top-buttons{background:transparent!important}
+body.dark .bottom-nav{background:rgba(15,23,21,.96)!important;border-top-color:rgba(255,255,255,.08)!important}
+body.dark .bottom-nav a{color:#a9b1ae!important}
+body.dark .bottom-nav a.active{color:#fff!important}
+body.dark .bottom-nav a.active .nav-icon{background:#215e55!important}
+body.dark .dialog{background:#18211f!important;color:#f4f4ef!important;border:1px solid rgba(255,255,255,.08)!important}
+body.dark .dialog small{color:#a9b1ae!important}
+@media(max-width:600px){
+ .device{top:var(--device-top,57%)!important}
+ .top-buttons{top:calc(82px + env(safe-area-inset-top,0px))!important}
+}
+</style>
+
+<style id="tas-v11">
+@media(max-width:600px){
+ body{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;overflow:hidden!important}
+ .app{height:auto!important;min-height:0!important}
+ .topbar{height:68px!important;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 8px!important}
+ .top-buttons{position:absolute!important;top:calc(72px + env(safe-area-inset-top,0px))!important;left:0!important;right:0!important;margin:0 auto!important;max-width:520px!important;padding:0 14px!important;z-index:130!important;grid-template-columns:.72fr 1fr 1.35fr!important}
+ .top-buttons button{font-size:.72rem!important;white-space:nowrap!important}
+ .device{top:var(--device-top,57%)!important}
+ #closeDialog{background:var(--surface2)!important;color:var(--ink)!important;border:1px solid var(--line)!important}
+ body.dark #closeDialog{background:#222d29!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}
+}
+</style>
+
+<style id="tas-v12">
+html.tas-dark{background:#0b1210!important;color-scheme:dark!important}html.tas-dark body,body.dark{background:#0b1210!important;color:#f7f5ef!important}body.dark::before,body.dark::after{background:#0b1210!important}body.dark #app-nav,body.dark .app{background:#0b1210!important}body.dark .topbar{background:#0b1210!important}body.dark .top-buttons{background:#0b1210!important}body.dark .bottom-nav{background:rgba(11,18,16,.98)!important}.big-button{touch-action:none!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important;cursor:pointer!important}.big-button:active{transform:scale(.985)!important}
+</style>
+<style id="tas-v13">html,body{width:100%!important;height:100%!important;min-height:100dvh!important}html.tas-dark,html.tas-dark body,body.dark,body.dark .app,body.dark #app-nav{background:#08110f!important;color:#f8f6f0!important}body.dark .topbar,body.dark .top-buttons{background:#08110f!important}body.dark .bottom-nav{background:#08110f!important;border-top-color:rgba(255,255,255,.09)!important;box-shadow:0 -10px 30px rgba(0,0,0,.22)!important}body.dark .bottom-nav a{color:#aab5b0!important}body.dark .bottom-nav a.active{color:#fff!important}body.dark .top-buttons button{background:#13201d!important;color:#fff!important;border-color:rgba(255,255,255,.09)!important}body.dark .dialog{background:#13201d!important;color:#fff!important}body.dark .dialog-icon{background:#202e2a!important}body.dark #closeDialog,body.dark #cancelReset,body.dark .arrow-buttons button{background:#202e2a!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}.big-button,.top-buttons button,.dialog button{touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important}.big-button{transition:transform .045s ease!important}.big-button:active{transform:scale(.975)!important}</style><style id="tas-v14">#closeDialog,#cancelReset{background:var(--surface2)!important;color:var(--ink)!important;border:1px solid var(--line)!important}body.dark #closeDialog,body.dark #cancelReset{background:#202e2a!important;color:#fff!important;border-color:rgba(255,255,255,.08)!important}.arrow-buttons button{touch-action:manipulation!important;-webkit-tap-highlight-color:transparent!important}</style></head>
+<body><div class="app"><header class="topbar"><div><h1>التسبيح</h1></div></header></div>
+
+<div class="top-buttons">
+  <button id="darkModeBtn">🌙</button>
+  <button id="resetBtn">↺ تصفير</button>
+  <button id="moveBtn">↕ تحريك الجهاز</button>
+	
+</div>
+
+<div class="device" id="device">
+  <div class="screen" id="counter">000</div>
+  <button class="big-button" id="bigBtn"></button>
+</div>
+
+<!-- نافذة تحريك الجهاز -->
+<div id="moveDialog" class="dialog">
+  <div class="dialog-icon">↕</div><p>موضع جهاز التسبيح</p><small>حرّك الجهاز للأعلى أو الأسفل ثم احفظ موضعه.</small>
+  <div class="arrow-buttons">
+    <button id="upBtn">↑ للأعلى</button>
+    <button id="downBtn">↓ للأسفل</button>
+  </div>
+  <button id="savePosition">حفظ الموضع</button>
+  <button id="closeDialog">إلغاء</button>
+</div>
+
+<!-- نافذة إعادة التعيين -->
+<div id="resetDialog" class="dialog">
+  <div class="dialog-icon danger">↺</div><p>تصفير العداد؟</p><small>سيعود عداد التسبيح إلى صفر.</small>
+  <button id="confirmReset">تصفير</button>
+  <button id="cancelReset">إلغاء</button>
+</div>
+
+<script>
+const counterDisplay = document.getElementById("counter");
+const bigBtn = document.getElementById("bigBtn");
+const resetBtn = document.getElementById("resetBtn");
+const darkModeBtn = document.getElementById("darkModeBtn");
+const device = document.getElementById("device");
+const moveBtn = document.getElementById("moveBtn");
+const moveDialog = document.getElementById("moveDialog");
+const upBtn = document.getElementById("upBtn");
+const downBtn = document.getElementById("downBtn");
+const savePosition = document.getElementById("savePosition");
+const closeDialog = document.getElementById("closeDialog");
+const resetDialog = document.getElementById("resetDialog");
+const confirmReset = document.getElementById("confirmReset");
+const cancelReset = document.getElementById("cancelReset");
+
+let count = parseInt(AthkarAuth.storageGet("tasbeehCount")) || 0;
+
+// وضع الداكن
+const themeColor=document.getElementById("themeColor");
+function applyTasTheme(isDark){
+  document.body.classList.toggle("dark",isDark);
+  document.documentElement.classList.toggle("tas-dark",isDark);
+  darkModeBtn.textContent=isDark?"☀️":"🌙";
+  if(themeColor)themeColor.setAttribute("content",isDark?"#0f1715":"#f5f3ec");
+}
+applyTasTheme(AthkarAuth.storageGet("darkMode")==="true");
+
+// تحميل موقع الجهاز كنسبة مئوية ثابتة
+let deviceTop = parseFloat(AthkarAuth.storageGet("deviceTopPercent") || "57");
+function applyDeviceTop(){device.style.setProperty("--device-top",deviceTop+"%")}
+applyDeviceTop();
+
+updateDisplay();
+
+// زر التسبيح — pointerdown أسرع على الجوال من click ويسمح بالنقرات المتتابعة
+function incrementTasbeeh(e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  count++;saveCount();updateDisplay();
+  if(navigator.vibrate) navigator.vibrate(8);
+  if(count%100===0)showPopup(`🌹 وصلت ${count} تسبيحة! الله يتقبل منك 🙏🏻`);
+}
+let lastTasPress=0;function fastTasPress(e){const n=performance.now();if(n-lastTasPress<32){e?.preventDefault?.();return}lastTasPress=n;incrementTasbeeh(e)}if(window.PointerEvent){bigBtn.addEventListener("pointerdown",fastTasPress,{passive:false})}else{bigBtn.addEventListener("touchstart",fastTasPress,{passive:false})}bigBtn.addEventListener("contextmenu",e=>e.preventDefault());
+
+// زر إعادة التعيين
+resetBtn.addEventListener("click", () => {
+  resetDialog.style.display = "flex";
+});
+confirmReset.addEventListener("click", () => {
+  count = 0;
+  saveCount();
+  updateDisplay();
+  resetDialog.style.display = "none";
+});
+cancelReset.addEventListener("click", () => {
+  resetDialog.style.display = "none";
+});
+
+// زر الوضع الداكن
+darkModeBtn.addEventListener("click", () => {
+  moveDialog.style.display = "none";
+  const isDark=!document.body.classList.contains("dark");
+  AthkarAuth.storageSet("darkMode", isDark);
+  applyTasTheme(isDark);
+});
+
+// تحريك الجهاز
+moveBtn.addEventListener("click", () => moveDialog.style.display = "flex");
+function bindRapidMove(el,fn){
+  el.style.touchAction="manipulation";
+  if(window.PointerEvent)el.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;fn()},{passive:true});
+  else el.addEventListener("click",fn);
+}
+bindRapidMove(upBtn,()=>{deviceTop=Math.max(42,deviceTop-2.5);applyDeviceTop()});
+bindRapidMove(downBtn,()=>{deviceTop=Math.min(70,deviceTop+2.5);applyDeviceTop()});
+savePosition.addEventListener("click", () => {
+  AthkarAuth.storageSet("deviceTopPercent", String(deviceTop));
+  moveDialog.style.display = "none";
+  showPopup("تم حفظ موضع الجهاز ✓");
+});
+closeDialog.addEventListener("click", () => moveDialog.style.display = "none");
+
+// تحديث الشاشة
+function updateDisplay() {
+  counterDisplay.textContent = count.toString().padStart(3, "0");
+}
+function saveCount() {
+  AthkarAuth.storageSet("tasbeehCount", count);
+}
+
+// نافذة منبثقة صغيرة
+function showPopup(msg) {
+  const popup = document.createElement("div");
+  popup.textContent = msg;
+  popup.style.position = "fixed";
+  popup.style.bottom = "20px";
+  popup.style.left = "50%";
+  popup.style.transform = "translateX(-50%)";
+  popup.style.background = "#333";
+  popup.style.color = "#fff";
+  popup.style.padding = "10px 20px";
+  popup.style.borderRadius = "8px";
+  popup.style.fontSize = "14px";
+  popup.style.boxShadow = "0 3px 8px rgba(0,0,0,0.4)";
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 2000);
+}
+
+// منع نسخ/لصق
+["contextmenu","copy","cut","paste"].forEach(evt => 
+  document.addEventListener(evt, e => e.preventDefault())
+);
+
+
+</script>
+<div id="app-nav"></div><script src="app-core.js"></script><script>document.getElementById("app-nav").innerHTML=nav("tas")</script></body>
+</html>

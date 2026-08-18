@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#153f3a">
+<title>التقويم</title><link rel="stylesheet" href="app.css">
+<script src="auth.js"></script>
+<script>window.__authReady=AthkarAuth.require();</script>
+</head>
+<body>
+<main class="app">
+<header class="topbar"><div><div class="eyebrow">ميلادي · أم القرى</div><h1>التقويم والمواعيد</h1></div><button class="top-action" id="todayBtn">اليوم</button></header>
+<div class="content">
+<section class="section"><div class="card calendar-card">
+<div class="calendar-toolbar"><div class="month-nav"><button class="icon-btn" id="prev" aria-label="الشهر السابق">‹</button><div class="month-title-wrap"><div class="month-title" id="monthTitle">—</div><div class="month-subtitle" id="monthSubTitle">—</div></div><button class="icon-btn" id="next" aria-label="الشهر التالي">›</button></div><div class="segmented"><button class="active" data-mode="greg">ميلادي</button><button data-mode="hijri">هجري</button></div></div>
+<div class="calendar-week"><span>أحد</span><span>إثنين</span><span>ثلاثاء</span><span>أربعاء</span><span>خميس</span><span>جمعة</span><span>سبت</span></div><div class="calendar-grid" id="grid"></div>
+<div class="calendar-legend"><span>💰 راتب</span><span>🇸🇦 حساب المواطن</span><span>📌 موعد شخصي</span></div>
+</div></section>
+<section class="section"><div class="section-head selected-day-head"><div class="selected-day-title-wrap"><h2 id="selectedTitle">أحداث هذا اليوم</h2><div class="selected-day-context" id="selectedRelative">اليوم</div><div class="selected-day-dates" id="selectedDates">—</div></div><button class="link-btn" id="addInline">+ إضافة</button></div><div class="selected-events" id="events"></div></section>
+<section class="section"><div class="section-head"><h2 id="monthEventsTitle">مواعيد الشهر</h2></div><div id="monthEvents" class="month-events"></div></section>
+</div></main>
+<button class="fab" id="fab">＋</button>
+<dialog class="sheet" id="sheet"><form class="sheet-body" id="form"><div class="handle"></div><div class="sheet-head"><div><div class="eyebrow">الموعد</div><h2 id="formTitle">إضافة موعد</h2></div><button type="button" class="sheet-close" id="cancel">×</button></div><input type="hidden" id="id"><input type="hidden" id="emoji" value="📌"><div class="form">
+<label>رمز الموعد<div class="emoji-picks" id="emojiPicks"></div><div class="custom-emoji-row"><input id="customEmoji" type="text" maxlength="8" inputmode="text" placeholder="أو اكتب أي إيموجي"></div></label><label>العنوان<input id="title" maxlength="80" required placeholder="مثال: موعد مستشفى"></label><div class="form-two"><label>التاريخ<input type="date" id="date" required dir="ltr"></label><label>الوقت<input type="time" id="time" required step="60" dir="ltr"></label></div><label>ملاحظات<textarea id="notes" rows="2" maxlength="250" placeholder="اختياري"></textarea></label><div class="form-actions"><button type="button" class="btn danger-outline" id="deleteFromEdit" style="display:none">حذف</button><button class="btn primary" type="submit">حفظ الموعد</button></div></div></form></dialog>
+<dialog class="confirm-dialog" id="deleteDialog"><div class="confirm-body"><div class="confirm-icon">🗑️</div><h3>حذف الموعد؟</h3><p>سيتم حذف الموعد نهائيًا من هذا الجهاز.</p><div class="confirm-actions"><button class="btn" id="deleteCancel">إلغاء</button><button class="btn danger-solid" id="deleteConfirm">حذف</button></div></div></dialog>
+<dialog class="confirm-dialog finance-edit-dialog" id="financeDialog"><div class="confirm-body"><div class="confirm-icon" id="financeIcon">💰</div><h3 id="financeTitle">تعديل الاستحقاق</h3><p class="finance-edit-note">غيّر التاريخ يدويًا، أو اضغط مطولًا على الإيموجي في التقويم واسحبه لليوم المطلوب.</p><label class="finance-date-label">التاريخ<input id="financeDate" type="text" inputmode="numeric" autocomplete="off" placeholder="2026/8/27" dir="ltr"></label><div class="finance-official" id="financeOfficial">—</div><div class="confirm-actions finance-actions"><button class="btn" type="button" id="financeCancel">إلغاء</button><button class="btn" type="button" id="financeReset">استعادة الرسمي</button><button class="btn primary" type="button" id="financeSave">حفظ</button></div></div></dialog>
+<div id="nav"></div>
+<script src="app-core.js"></script>
+<script>
+document.getElementById('nav').innerHTML=nav('calendar');
+let cursor=saNow(),selected=ymd(saNow()),mode='greg',pendingDelete=null;
+const emojis=['📌','🏥','💼','🎓','✈️','👨‍👩‍👧','💊','🏠','🚗','🎂','💳','📝','⚽','🛒'];
+emojiPicks.innerHTML=emojis.map(e=>`<button type="button" data-e="${e}">${e}</button>`).join('');
+emojiPicks.onclick=e=>{const b=e.target.closest('[data-e]');if(!b)return;emoji.value=b.dataset.e;emojiPicks.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b))};
+customEmoji.addEventListener('input',()=>{const v=customEmoji.value.trim();if(v){emoji.value=v;emojiPicks.querySelectorAll('button').forEach(x=>x.classList.remove('active'))}});
+function latinDigits(v){return String(v||'').replace(/[٠-٩]/g,d=>'0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]).replace(/[۰-۹]/g,d=>'0123456789'['۰۱۲۳۴۵۶۷۸۹'.indexOf(d)])}
+function isoToDisplayDate(iso){const m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?`${+m[1]}/${+m[2]}/${+m[3]}`:''}
+function displayToIsoDate(v){v=latinDigits(v).trim();const m=v.match(/^(\d{4})\s*[\/-]\s*(\d{1,2})\s*[\/-]\s*(\d{1,2})$/);if(!m)return null;const y=+m[1],mo=+m[2],d=+m[3],dt=new Date(y,mo-1,d);if(dt.getFullYear()!=y||dt.getMonth()!=mo-1||dt.getDate()!=d)return null;return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`}
+function normalizeTime(v){v=latinDigits(v).trim();const m=v.match(/^(\d{1,2})\s*:\s*(\d{1,2})$/);if(!m)return null;const h=+m[1],mi=+m[2];if(h>23||mi>59)return null;return `${String(h).padStart(2,'0')}:${String(mi).padStart(2,'0')}`}
+
+function monthDays(y,m){return new Date(y,m+1,0).getDate()}
+function dateFinance(d){return financeForMonth(d.getFullYear(),d.getMonth()+1).filter(x=>ymd(x.date)===ymd(d))}
+function render(){
+ const y=cursor.getFullYear(),m=cursor.getMonth(),first=new Date(y,m,1),lead=first.getDay(),apps=loadAppointments();
+ monthTitle.textContent=mode==='greg'?gregMonthYear(cursor):hijriMonthYear(cursor);
+ monthSubTitle.textContent=mode==='greg'?hijriMonthYear(cursor):gregMonthYear(cursor);
+ monthEventsTitle.textContent=`مواعيد ${gregMonthYear(cursor)}`;
+ grid.innerHTML='';
+ for(let i=0;i<42;i++){
+   const d=new Date(y,m,1-lead+i),muted=d.getMonth()!==m,hp=hijriParts(d),dayApps=apps.filter(a=>occursOn(a,d)),fin=dateFinance(d);
+   const b=document.createElement('button');b.className=`day ${muted?'muted':''} ${ymd(d)===ymd(saNow())?'today':''} ${ymd(d)===selected?'selected':''}`;b.dataset.date=ymd(d);
+   const primary=mode==='greg'?d.getDate():hp.day,secondary=mode==='greg'?hp.day:d.getDate();
+   const financeMarks=fin.map(x=>`<span class="drag-emoji" data-drag-type="finance" data-kind="${x.kind}" data-source-year="${x.sourceYear}" data-source-month="${x.sourceMonth}" title="اضغط مطولًا للتحريك">${x.emoji}</span>`);
+   const personalMarks=dayApps.map(a=>`<span class="drag-emoji" data-drag-type="appointment" data-id="${esc(a.id)}" title="${esc(a.title||'موعد')}">${esc(a.emoji||'📌')}</span>`);
+   const marks=[...financeMarks,...personalMarks];
+   b.innerHTML=`<div class="day-main">${primary}</div><div class="day-sub">${secondary}</div><div class="day-emoji">${marks.join('')}</div>`;
+   b.onclick=(e)=>{if(e.target.closest('.drag-emoji')||suppressDayClick)return;selected=ymd(d);render();renderEvents()};grid.appendChild(b)
+ }
+ renderEvents();renderMonthEvents()
+}
+function eventWhen(a,dstr=a.date){return new Date(dstr+'T'+(a.time||'00:00'))}
+function openEdit(a){
+ form.reset();id.value=a?.id||'';emoji.value=a?.emoji||'📌';title.value=a?.title||'';date.value=a?.date||selected;time.value=a?.time||'12:00';notes.value=a?.notes||'';
+ formTitle.textContent=a?'تعديل الموعد':'إضافة موعد';deleteFromEdit.style.display=a?'block':'none';
+ emojiPicks.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.e===emoji.value));customEmoji.value=emojis.includes(emoji.value)?'':emoji.value;sheet.showModal()
+}
+function relativeDayText(d){
+ const today=new Date(saNow().getFullYear(),saNow().getMonth(),saNow().getDate());
+ const target=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+ const diff=Math.round((target-today)/86400000);
+ if(diff===0)return 'اليوم';
+ if(diff===1)return 'بعد يوم واحد';
+ if(diff===-1)return 'قبل يوم واحد';
+ return diff>0?`بعد ${diff} أيام`:`قبل ${Math.abs(diff)} أيام`;
+}
+function renderEvents(){
+ const d=new Date(selected+'T12:00:00'),a=loadAppointments().filter(x=>occursOn(x,d)),fin=dateFinance(d);
+ selectedTitle.textContent='أحداث هذا اليوم';selectedRelative.textContent=relativeDayText(d);selectedDates.textContent=`${gregLong(d)} · ${hijriLong(d).replace(/^[^،]+،?\s*/,'')}`;
+ const rows=[];
+ fin.forEach(x=>rows.push(`<button class="event-row system-event event-button" data-fin-kind="${x.kind}" data-source-year="${x.sourceYear}" data-source-month="${x.sourceMonth}"><div class="event-emoji">${x.emoji}</div><div><div class="event-title">${x.title}${x.overridden?' <small class="manual-badge">معدل</small>':''}</div><div class="event-meta">${gregLong(x.date)}</div></div><div class="event-count">${durationInlineHTML(x.date)}</div></button>`));
+ a.forEach(x=>{const when=eventWhen(x,selected);rows.push(`<button class="event-row event-button" data-edit="${x.id}"><div class="event-emoji">${esc(x.emoji||'📌')}</div><div><div class="event-title">${esc(x.title)}</div><div class="event-meta">${x.time||''}${x.notes?' · '+esc(x.notes):''}</div></div><div class="event-count">${durationInlineHTML(when)}</div></button>`)});
+ events.innerHTML=rows.length?rows.join(''):'<div class="card empty">لا توجد مواعيد أو استحقاقات في هذا اليوم.</div>';
+ events.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEdit(loadAppointments().find(x=>x.id===b.dataset.edit)));events.querySelectorAll('[data-fin-kind]').forEach(b=>b.onclick=()=>openFinanceEditor(b.dataset.finKind,+b.dataset.sourceYear,+b.dataset.sourceMonth))
+}
+function renderMonthEvents(){
+ const expiredWasOpen=monthEvents.querySelector('.expired-group')?.open||false;
+ const y=cursor.getFullYear(),m=cursor.getMonth(),apps=loadAppointments(),rows=[],now=saNow();
+ financeForMonth(y,m+1).forEach(x=>rows.push({type:'system',emoji:x.emoji,title:x.title,when:x.date,meta:gregLong(x.date),kind:x.kind,sourceYear:x.sourceYear,sourceMonth:x.sourceMonth,overridden:x.overridden}));
+ for(const a of apps){for(let d=1;d<=monthDays(y,m);d++){const dt=new Date(y,m,d);if(occursOn(a,dt)){const when=eventWhen(a,ymd(dt));rows.push({type:'personal',id:a.id,emoji:a.emoji||'📌',title:a.title,when,meta:`${gregLong(when)} · ${a.time||''}`})}}}
+ const upcoming=rows.filter(x=>x.when>=now).sort((a,b)=>a.when-b.when), expired=rows.filter(x=>x.when<now).sort((a,b)=>b.when-a.when);
+ const rowHtml=x=>`<button class="month-event ${x.type==='system'?'system':''}" ${x.id?`data-edit="${x.id}"`:''} ${x.type==='system'?`data-fin-kind="${x.kind}" data-source-year="${x.sourceYear}" data-source-month="${x.sourceMonth}"`:''}><div class="event-emoji">${x.emoji}</div><div class="month-event-copy"><strong>${esc(x.title)}${x.overridden?' <small class="manual-badge">معدل</small>':''}</strong><span>${x.meta}</span></div><div class="event-count">${durationInlineHTML(x.when)}</div></button>`;
+ let html=upcoming.map(rowHtml).join('');
+ if(expired.length)html+=`<details class="expired-group" ${expiredWasOpen?'open':''}><summary><span>المواعيد المنتهية</span><span>${expired.length}</span></summary>${expired.map(rowHtml).join('')}</details>`;
+ monthEvents.innerHTML=html||'<div class="card empty">لا توجد مواعيد في هذا الشهر.</div>';
+ monthEvents.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openEdit(loadAppointments().find(x=>x.id===b.dataset.edit)));monthEvents.querySelectorAll('[data-fin-kind]').forEach(b=>b.onclick=()=>openFinanceEditor(b.dataset.finKind,+b.dataset.sourceYear,+b.dataset.sourceMonth))
+}
+let editingFinance=null;
+function openFinanceEditor(kind,y,m){
+ const item=financeEvent(kind,y,m);editingFinance={kind,y,m};financeIcon.textContent=item.emoji;financeTitle.textContent=`تعديل ${item.title}`;financeDate.value=isoToDisplayDate(ymd(item.date));financeOfficial.textContent=`الموعد الرسمي: ${isoToDisplayDate(ymd(item.officialDate))}${item.overridden?' · لديك تعديل شخصي':''}`;financeDialog.showModal();
+}
+financeCancel.onclick=()=>{editingFinance=null;financeDialog.close()};
+financeSave.onclick=()=>{if(!editingFinance)return;const iso=displayToIsoDate(financeDate.value);if(!iso){financeDate.setCustomValidity('اكتب التاريخ بهذا الشكل: 2026/8/27');financeDate.reportValidity();return}financeDate.setCustomValidity('');const d=parseYmd(iso);setFinanceOverride(editingFinance.kind,editingFinance.y,editingFinance.m,d);selected=ymd(d);cursor=new Date(d.getFullYear(),d.getMonth(),1);financeDialog.close();editingFinance=null;render()};
+financeReset.onclick=()=>{if(!editingFinance)return;const d=clearFinanceOverride(editingFinance.kind,editingFinance.y,editingFinance.m);selected=ymd(d);cursor=new Date(d.getFullYear(),d.getMonth(),1);financeDialog.close();editingFinance=null;render()};
+financeDate.addEventListener('blur',()=>{const iso=displayToIsoDate(financeDate.value);if(iso)financeDate.value=isoToDisplayDate(iso)});
+
+// ضغط مطوّل على أي إيموجي ثم سحبه — يدعم أكثر من موعد في نفس اليوم
+let dragState=null,dragHoldTimer=null,dragGhost=null,dragTarget=null,suppressDayClick=false;
+const dragToast=document.createElement('div');dragToast.className='drag-toast';document.body.appendChild(dragToast);
+function showDragToast(msg){dragToast.textContent=msg;dragToast.classList.add('show');clearTimeout(showDragToast.t);showDragToast.t=setTimeout(()=>dragToast.classList.remove('show'),1800)}
+function clearDragVisual(){clearTimeout(dragHoldTimer);dragHoldTimer=null;document.body.classList.remove('calendar-dragging');document.querySelectorAll('.day.drag-target').forEach(x=>x.classList.remove('drag-target'));document.querySelectorAll('.drag-emoji.drag-source').forEach(x=>x.classList.remove('drag-source'));dragGhost?.remove();dragGhost=null;dragTarget=null}
+function moveDragGhost(x,y){if(dragGhost){dragGhost.style.left=x+'px';dragGhost.style.top=y+'px'}const hit=document.elementFromPoint(x,y)?.closest?.('.day[data-date]');if(hit!==dragTarget){dragTarget?.classList.remove('drag-target');dragTarget=hit||null;dragTarget?.classList.add('drag-target')}}
+function beginEmojiDrag(el,e){
+ dragState={type:el.dataset.dragType,id:el.dataset.id||null,kind:el.dataset.kind||null,y:+el.dataset.sourceYear||null,m:+el.dataset.sourceMonth||null,pointerId:e.pointerId,sourceEl:el,active:true};
+ suppressDayClick=true;document.body.classList.add('calendar-dragging');el.classList.add('drag-source');navigator.vibrate?.(35);
+ dragGhost=document.createElement('div');dragGhost.className='calendar-drag-ghost';dragGhost.textContent=el.textContent.trim();document.body.appendChild(dragGhost);moveDragGhost(e.clientX,e.clientY);
+ try{el.setPointerCapture(e.pointerId)}catch{}
+}
+function finishEmojiDrag(){
+ const target=dragTarget?.dataset.date,st=dragState;
+ if(target&&st){
+   if(st.type==='appointment'&&st.id){
+     const apps=loadAppointments(),a=apps.find(x=>x.id===st.id);
+     if(a){a.date=target;a.repeat='none';saveAppointments(apps);cloudUpsertAppointment(a).catch(e=>showDragToast(e.message));showDragToast(`تم نقل ${a.emoji||'📌'} إلى ${isoToDisplayDate(target)}`)}
+   }else if(st.type==='finance'&&st.kind){
+     setFinanceOverride(st.kind,st.y,st.m,parseYmd(target));showDragToast(`تم نقل ${st.kind==='salary'?'💰':'🇸🇦'} إلى ${isoToDisplayDate(target)}`);
+   }
+   selected=target;cursor=new Date(target+'T12:00:00');
+ }
+ clearDragVisual();dragState=null;render();setTimeout(()=>{suppressDayClick=false},320);
+}
+grid.addEventListener('contextmenu',e=>{if(e.target.closest('.day'))e.preventDefault()});
+grid.addEventListener('pointerdown',e=>{
+ const el=e.target.closest('.drag-emoji');if(!el)return;if(e.pointerType==='mouse'&&e.button!==0)return;
+ e.stopPropagation();const sx=e.clientX,sy=e.clientY;
+ dragHoldTimer=setTimeout(()=>beginEmojiDrag(el,e),620);
+ const onMove=ev=>{
+   if(!dragState&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>11){clearTimeout(dragHoldTimer);dragHoldTimer=null}
+   if(dragState&&ev.pointerId===dragState.pointerId){ev.preventDefault();moveDragGhost(ev.clientX,ev.clientY)}
+ };
+ const onUp=ev=>{
+   window.removeEventListener('pointermove',onMove);window.removeEventListener('pointerup',onUp);window.removeEventListener('pointercancel',onUp);
+   if(dragState&&ev.pointerId===dragState.pointerId){ev.preventDefault();finishEmojiDrag();return}
+   clearTimeout(dragHoldTimer);dragHoldTimer=null;
+   if(el.dataset.dragType==='appointment'){const a=loadAppointments().find(x=>x.id===el.dataset.id);if(a)openEdit(a)}
+   else if(el.dataset.dragType==='finance')openFinanceEditor(el.dataset.kind,+el.dataset.sourceYear,+el.dataset.sourceMonth);
+ };
+ window.addEventListener('pointermove',onMove,{passive:false});
+ window.addEventListener('pointerup',onUp,{passive:false,once:true});
+ window.addEventListener('pointercancel',onUp,{passive:false,once:true});
+},{passive:true});
+
+function openForm(){openEdit(null)}
+fab.onclick=addInline.onclick=openForm;
+cancel.onclick=()=>sheet.close();
+const handle=sheet.querySelector('.handle');
+form.onsubmit=async e=>{
+  e.preventDefault();
+
+  const iso=String(date.value||'').trim();
+  const tm=String(time.value||'').trim();
+
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)){
+    date.setCustomValidity('اختر التاريخ');
+    date.reportValidity();
+    return;
+  }
+  date.setCustomValidity('');
+
+  if(!/^\d{2}:\d{2}$/.test(tm)){
+    time.setCustomValidity('اختر الوقت');
+    time.reportValidity();
+    return;
+  }
+  time.setCustomValidity('');
+
+  const item={
+    id:id.value||(crypto.randomUUID?crypto.randomUUID():String(Date.now())),
+    emoji:(customEmoji.value.trim()||emoji.value||'📌'),
+    title:title.value.trim(),
+    date:iso,
+    time:tm,
+    repeat:'none',
+    notes:notes.value.trim()
+  };
+
+  try{
+    await cloudUpsertAppointment(item);
+    let a=loadAppointments();
+    a=id.value?a.map(x=>x.id===id.value?item:x):[...a,item];
+    saveAppointments(a);
+    selected=iso;
+    cursor=new Date(iso+'T12:00:00');
+    sheet.close();
+    render();
+  }catch(err){
+    alert(err.message||'تعذر حفظ الموعد');
+  }
+};
+function askDelete(itemId){pendingDelete=itemId;deleteDialog.showModal()}
+deleteFromEdit.onclick=()=>askDelete(id.value);deleteCancel.onclick=()=>{pendingDelete=null;deleteDialog.close()};
+deleteConfirm.onclick=async()=>{if(pendingDelete){try{await cloudDeleteAppointment(pendingDelete);saveAppointments(loadAppointments().filter(x=>x.id!==pendingDelete));pendingDelete=null;deleteDialog.close();sheet.close();render()}catch(err){alert(err.message||'تعذر حذف الموعد')}}};
+prev.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()-1,1);render()};next.onclick=()=>{cursor=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);render()};todayBtn.onclick=()=>{cursor=saNow();selected=ymd(saNow());render()};
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));render()});
+const qp=new URLSearchParams(location.search);if(qp.get('date')){selected=qp.get('date');cursor=new Date(selected+'T12:00:00')}
+(async()=>{await window.__authReady;await syncUserCalendarData();render();if(qp.get('edit')){const found=loadAppointments().find(x=>x.id===qp.get('edit'));if(found)setTimeout(()=>openEdit(found),120)}setInterval(()=>{renderEvents();renderMonthEvents()},1000)})();
+</script>
+</body></html>
