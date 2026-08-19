@@ -1,255 +1,573 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#153f3a">
-<title>تسجيل الدخول — الأذكار</title>
-<link rel="stylesheet" href="app.css">
-<style>
-html,body{min-height:100%;background:#f3f1ea}
-body{padding:0!important}
-.login-page{min-height:100dvh;display:grid;place-items:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px))}
-.login-shell{width:min(100%,430px)}
-.login-brand{text-align:center;margin-bottom:24px}
-.login-mark{width:76px;height:76px;margin:0 auto 15px;border-radius:25px;background:linear-gradient(145deg,#18453f,#102d2a);display:grid;place-items:center;color:#fff;box-shadow:0 18px 45px rgba(16,45,42,.2)}
-.login-mark svg{width:38px;height:38px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.login-brand h1{margin:0;color:#122a25;font-size:1.55rem;font-weight:900}
-.login-brand p{margin:7px 0 0;color:#73807b;font-size:.79rem;line-height:1.7}
-.login-card{background:#fffef9;border:1px solid rgba(18,42,37,.09);border-radius:28px;padding:22px 18px;box-shadow:0 18px 48px rgba(18,42,37,.08)}
-.login-card h2{font-size:1.08rem;margin:0 0 4px;font-weight:900;color:#122a25}
-.login-card .sub{color:#73807b;font-size:.73rem;margin-bottom:18px}
-.login-form{display:grid;gap:13px}
-.login-field label{display:block;font-size:.72rem;font-weight:850;color:#334944;margin:0 3px 6px}
-.login-field input{width:100%;height:50px;border:1px solid rgba(18,42,37,.10);border-radius:15px;background:#f1eee6;color:#122a25;padding:0 14px;font:inherit;font-size:16px;outline:none}
-.login-field input:focus{border-color:#688d84;box-shadow:0 0 0 3px rgba(37,93,86,.08)}
-.password-wrap{position:relative}.password-wrap input{padding-left:52px}.show-pass{position:absolute;left:7px;top:7px;width:38px;height:36px;border:0;border-radius:11px;background:#fffef9;color:#45615b;font:inherit;font-size:.75rem}
-.remember-row{display:flex;align-items:center;gap:9px;padding:3px 2px;color:#455d57;font-size:.75rem;font-weight:750}
-.remember-row input{width:18px;height:18px;accent-color:#153f3a}
-.remember-note{font-size:.65rem;color:#8a938f;margin:-5px 28px 2px 0}
-.login-submit{height:50px;border:0;border-radius:15px;background:#153f3a;color:#fff;font:inherit;font-weight:900;font-size:.92rem;box-shadow:0 10px 24px rgba(21,63,58,.17)}
-.login-submit:disabled{opacity:.6}
-.login-error{display:none;padding:11px 12px;border-radius:13px;background:#f8e8e6;color:#953e3c;font-size:.74rem;font-weight:750;line-height:1.6}
-.login-error.show{display:block}
-.login-foot{text-align:center;margin-top:15px;color:#87918d;font-size:.64rem;line-height:1.7}
-.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;vertical-align:-3px;margin-left:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#153f3a" />
+    <title>تسجيل الدخول — الأذكار</title>
+    <link rel="stylesheet" href="app.css" />
+    <style>
+      html,
+      body {
+        min-height: 100%;
+        background: #f3f1ea;
+      }
+      body {
+        padding: 0 !important;
+      }
+      .login-page {
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+      }
+      .login-shell {
+        width: min(100%, 430px);
+      }
+      .login-brand {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .login-mark {
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 15px;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 18px 45px rgba(16, 45, 42, 0.2);
+      }
 
-.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:16px;background:#f1eee6;padding:5px;border-radius:15px}
-.auth-tab{height:38px;border:0;border-radius:11px;background:transparent;color:#63716d;font:inherit;font-size:.74rem;font-weight:850}
-.auth-tab.active{background:#fffef9;color:#153f3a;box-shadow:0 3px 10px rgba(21,63,58,.07)}
-.password-rules{display:grid;gap:3px;margin-top:5px;font-size:.62rem;color:#8a938f}
-.password-rules span.ok{color:#2b7568}
-.signup-note{font-size:.65rem;color:#7f8a86;line-height:1.7}
+      .login-mark img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+      .login-brand h1 {
+        margin: 0;
+        color: #122a25;
+        font-size: 1.55rem;
+        font-weight: 900;
+      }
+      .login-brand p {
+        margin: 7px 0 0;
+        color: #73807b;
+        font-size: 0.79rem;
+        line-height: 1.7;
+      }
+      .login-card {
+        background: #fffef9;
+        border: 1px solid rgba(18, 42, 37, 0.09);
+        border-radius: 28px;
+        padding: 22px 18px;
+        box-shadow: 0 18px 48px rgba(18, 42, 37, 0.08);
+      }
+      .login-card h2 {
+        font-size: 1.08rem;
+        margin: 0 0 4px;
+        font-weight: 900;
+        color: #122a25;
+      }
+      .login-card .sub {
+        color: #73807b;
+        font-size: 0.73rem;
+        margin-bottom: 18px;
+      }
+      .login-form {
+        display: grid;
+        gap: 13px;
+      }
+      .login-field label {
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 850;
+        color: #334944;
+        margin: 0 3px 6px;
+      }
+      .login-field input {
+        width: 100%;
+        height: 50px;
+        border: 1px solid rgba(18, 42, 37, 0.1);
+        border-radius: 15px;
+        background: #f1eee6;
+        color: #122a25;
+        padding: 0 14px;
+        font: inherit;
+        font-size: 16px;
+        outline: none;
+      }
+      .login-field input:focus {
+        border-color: #688d84;
+        box-shadow: 0 0 0 3px rgba(37, 93, 86, 0.08);
+      }
+      .password-wrap {
+        position: relative;
+      }
+      .password-wrap input {
+        padding-left: 52px;
+      }
+      .show-pass {
+        position: absolute;
+        left: 7px;
+        top: 7px;
+        width: 38px;
+        height: 36px;
+        border: 0;
+        border-radius: 11px;
+        background: #fffef9;
+        color: #45615b;
+        font: inherit;
+        font-size: 0.75rem;
+      }
+      .remember-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 3px 2px;
+        color: #455d57;
+        font-size: 0.75rem;
+        font-weight: 750;
+      }
+      .remember-row input {
+        width: 18px;
+        height: 18px;
+        accent-color: #153f3a;
+      }
+      .remember-note {
+        font-size: 0.65rem;
+        color: #8a938f;
+        margin: -5px 28px 2px 0;
+      }
+      .login-submit {
+        height: 50px;
+        border: 0;
+        border-radius: 15px;
+        background: #153f3a;
+        color: #fff;
+        font: inherit;
+        font-weight: 900;
+        font-size: 0.92rem;
+        box-shadow: 0 10px 24px rgba(21, 63, 58, 0.17);
+      }
+      .login-submit:disabled {
+        opacity: 0.6;
+      }
+      .login-error {
+        display: none;
+        padding: 11px 12px;
+        border-radius: 13px;
+        background: #f8e8e6;
+        color: #953e3c;
+        font-size: 0.74rem;
+        font-weight: 750;
+        line-height: 1.6;
+      }
+      .login-error.show {
+        display: block;
+      }
+      .login-foot {
+        text-align: center;
+        margin-top: 15px;
+        color: #87918d;
+        font-size: 0.64rem;
+        line-height: 1.7;
+      }
+      .spinner {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+        vertical-align: -3px;
+        margin-left: 6px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-.password-strength{margin-top:8px}
-.strength-track{height:7px;border-radius:999px;background:#e4e4df;overflow:hidden}
-.strength-fill{height:100%;width:0%;transition:width .2s,background .2s}
-.strength-label{margin-top:5px;font-size:.63rem;font-weight:850;color:#8a938f}
-.strength-fill.s1{width:25%;background:#c94c4c}.strength-label.s1{color:#b34343}
-.strength-fill.s2{width:50%;background:#d9913b}.strength-label.s2{color:#b9782f}
-.strength-fill.s3{width:75%;background:#d0b33e}.strength-label.s3{color:#9b862c}
-.strength-fill.s4{width:100%;background:#3a8c6d}.strength-label.s4{color:#2f795e}
-</style>
-<script src="auth.js"></script>
-</head>
-<body>
-<main class="login-page">
-  <div class="login-shell">
-    <div class="login-brand">
-      <div class="login-mark">
-        <svg viewBox="0 0 24 24"><path d="M18.8 15.6A7.9 7.9 0 1 1 8.4 5.2a6.7 6.7 0 0 0 10.4 10.4Z"/></svg>
-      </div>
-      <h1>الأذكار</h1>
-      <p>صلاتك، أذكارك ومواعيدك في مكان واحد.</p>
-    </div>
-    <section class="login-card">
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="loginTab" type="button">تسجيل الدخول</button>
-        <button class="auth-tab" id="signupTab" type="button">إنشاء حساب</button>
-      </div>
+      .auth-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+        margin-bottom: 16px;
+        background: #f1eee6;
+        padding: 5px;
+        border-radius: 15px;
+      }
+      .auth-tab {
+        height: 38px;
+        border: 0;
+        border-radius: 11px;
+        background: transparent;
+        color: #63716d;
+        font: inherit;
+        font-size: 0.74rem;
+        font-weight: 850;
+      }
+      .auth-tab.active {
+        background: #fffef9;
+        color: #153f3a;
+        box-shadow: 0 3px 10px rgba(21, 63, 58, 0.07);
+      }
+      .password-rules {
+        display: grid;
+        gap: 3px;
+        margin-top: 5px;
+        font-size: 0.62rem;
+        color: #8a938f;
+      }
+      .password-rules span.ok {
+        color: #2b7568;
+      }
+      .signup-note {
+        font-size: 0.65rem;
+        color: #7f8a86;
+        line-height: 1.7;
+      }
 
-      <div id="loginPane">
-        <h2>تسجيل الدخول</h2>
-        <div class="sub">أدخل اسم المستخدم وكلمة المرور.</div>
-        <form class="login-form" id="loginForm">
-        <div class="login-field">
-          <label for="username">اسم المستخدم</label>
-          <input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+      .password-strength {
+        margin-top: 8px;
+      }
+      .strength-track {
+        height: 7px;
+        border-radius: 999px;
+        background: #e4e4df;
+        overflow: hidden;
+      }
+      .strength-fill {
+        height: 100%;
+        width: 0%;
+        transition:
+          width 0.2s,
+          background 0.2s;
+      }
+      .strength-label {
+        margin-top: 5px;
+        font-size: 0.63rem;
+        font-weight: 850;
+        color: #8a938f;
+      }
+      .strength-fill.s1 {
+        width: 25%;
+        background: #c94c4c;
+      }
+      .strength-label.s1 {
+        color: #b34343;
+      }
+      .strength-fill.s2 {
+        width: 50%;
+        background: #d9913b;
+      }
+      .strength-label.s2 {
+        color: #b9782f;
+      }
+      .strength-fill.s3 {
+        width: 75%;
+        background: #d0b33e;
+      }
+      .strength-label.s3 {
+        color: #9b862c;
+      }
+      .strength-fill.s4 {
+        width: 100%;
+        background: #3a8c6d;
+      }
+      .strength-label.s4 {
+        color: #2f795e;
+      }
+    </style>
+    <script src="auth.js"></script>
+  </head>
+  <body>
+    <main class="login-page">
+      <div class="login-shell">
+        <div class="login-brand">
+          <div class="login-mark">
+            <img src="apple-touch-icon.png" alt="الأذكار" />
+          </div>
+          <h1>الأذكار</h1>
+          <p>صلاتك، أذكارك ومواعيدك في مكان واحد.</p>
         </div>
-        <div class="login-field">
-          <label for="password">كلمة المرور</label>
-          <div class="password-wrap">
-            <input id="password" name="password" type="password" autocomplete="current-password" required>
-            <button class="show-pass" id="showPass" type="button">إظهار</button>
+        <section class="login-card">
+          <div class="auth-tabs">
+            <button class="auth-tab active" id="loginTab" type="button">
+              تسجيل الدخول
+            </button>
+            <button class="auth-tab" id="signupTab" type="button">
+              إنشاء حساب
+            </button>
           </div>
+
+          <div id="loginPane">
+            <h2>تسجيل الدخول</h2>
+            <div class="sub">أدخل اسم المستخدم وكلمة المرور.</div>
+            <form class="login-form" id="loginForm">
+              <div class="login-field">
+                <label for="username">اسم المستخدم</label>
+                <input
+                  id="username"
+                  name="username"
+                  autocomplete="username"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  required
+                />
+              </div>
+              <div class="login-field">
+                <label for="password">كلمة المرور</label>
+                <div class="password-wrap">
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                    required
+                  />
+                  <button class="show-pass" id="showPass" type="button">
+                    إظهار
+                  </button>
+                </div>
+              </div>
+              <label class="remember-row"
+                ><input id="remember" type="checkbox" checked /> تذكرني على هذا
+                الجهاز</label
+              >
+              <div class="remember-note">
+                عند تفعيلها سيبقى حسابك مسجلًا حتى تضغط تسجيل الخروج.
+              </div>
+              <div class="login-error" id="loginError"></div>
+              <button class="login-submit" id="loginBtn" type="submit">
+                دخول
+              </button>
+            </form>
+          </div>
+
+          <div id="signupPane" style="display: none">
+            <h2>إنشاء حساب جديد</h2>
+            <div class="sub">
+              كل حساب له مواعيده وإعداداته ورمز Telegram الخاص به.
+            </div>
+            <form class="login-form" id="signupForm">
+              <div class="login-field">
+                <label for="signupName">الاسم</label>
+                <input
+                  id="signupName"
+                  autocomplete="name"
+                  maxlength="60"
+                  required
+                />
+              </div>
+              <div class="login-field">
+                <label for="signupUsername">اسم المستخدم</label>
+                <input
+                  id="signupUsername"
+                  autocomplete="username"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  required
+                />
+              </div>
+              <div class="login-field">
+                <label for="signupPassword">كلمة المرور</label>
+                <div class="password-wrap">
+                  <input
+                    id="signupPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="8"
+                    required
+                  />
+                  <button class="show-pass" id="showSignupPass" type="button">
+                    إظهار
+                  </button>
+                </div>
+                <div class="password-rules">
+                  <span id="ruleLen">• 8 أحرف على الأقل</span>
+                  <span id="ruleUpper">• حرف كبير A-Z</span>
+                  <span id="ruleLower">• حرف صغير a-z</span>
+                  <span id="ruleNumber">• رقم 0-9</span>
+                </div>
+                <div class="password-strength">
+                  <div class="strength-track">
+                    <div id="strengthFill" class="strength-fill"></div>
+                  </div>
+                  <div id="strengthLabel" class="strength-label">
+                    أدخل كلمة مرور
+                  </div>
+                </div>
+              </div>
+              <div class="login-field">
+                <label for="signupPassword2">تأكيد كلمة المرور</label>
+                <input
+                  id="signupPassword2"
+                  type="password"
+                  autocomplete="new-password"
+                  minlength="8"
+                  required
+                />
+              </div>
+              <div class="signup-note">
+                بعد الإنشاء سيتم تسجيل دخولك مباشرة، ويظهر رمز Telegram داخل
+                صفحة الحساب.
+              </div>
+              <div class="login-error" id="signupError"></div>
+              <button class="login-submit" id="signupBtn" type="submit">
+                إنشاء الحساب
+              </button>
+            </form>
+          </div>
+        </section>
+        <div class="login-foot">
+          يمكنك إنشاء حسابك مباشرة، وكل مستخدم له بياناته وإعداداته الخاصة.
         </div>
-        <label class="remember-row"><input id="remember" type="checkbox" checked> تذكرني على هذا الجهاز</label>
-        <div class="remember-note">عند تفعيلها سيبقى حسابك مسجلًا حتى تضغط تسجيل الخروج.</div>
-        <div class="login-error" id="loginError"></div>
-        <button class="login-submit" id="loginBtn" type="submit">دخول</button>
-        </form>
       </div>
+    </main>
+    <script>
+      if (AthkarAuth.token()) {
+        AthkarAuth.me()
+          .then(() => location.replace("time.html"))
+          .catch(() => AthkarAuth.clear());
+      }
+      showPass.onclick = () => {
+        const show = password.type === "password";
+        password.type = show ? "text" : "password";
+        showPass.textContent = show ? "إخفاء" : "إظهار";
+      };
 
-      <div id="signupPane" style="display:none">
-        <h2>إنشاء حساب جديد</h2>
-        <div class="sub">كل حساب له مواعيده وإعداداته ورمز Telegram الخاص به.</div>
-        <form class="login-form" id="signupForm">
-          <div class="login-field">
-            <label for="signupName">الاسم</label>
-            <input id="signupName" autocomplete="name" maxlength="60" required>
-          </div>
-          <div class="login-field">
-            <label for="signupUsername">اسم المستخدم</label>
-            <input id="signupUsername" autocomplete="username" autocapitalize="none" spellcheck="false" required>
-          </div>
-          <div class="login-field">
-            <label for="signupPassword">كلمة المرور</label>
-            <div class="password-wrap">
-              <input id="signupPassword" type="password" autocomplete="new-password" minlength="8" required>
-              <button class="show-pass" id="showSignupPass" type="button">إظهار</button>
-            </div>
-            <div class="password-rules">
-              <span id="ruleLen">• 8 أحرف على الأقل</span>
-              <span id="ruleUpper">• حرف كبير A-Z</span>
-              <span id="ruleLower">• حرف صغير a-z</span>
-              <span id="ruleNumber">• رقم 0-9</span>
-            </div>
-            <div class="password-strength">
-              <div class="strength-track"><div id="strengthFill" class="strength-fill"></div></div>
-              <div id="strengthLabel" class="strength-label">أدخل كلمة مرور</div>
-            </div>
-          </div>
-          <div class="login-field">
-            <label for="signupPassword2">تأكيد كلمة المرور</label>
-            <input id="signupPassword2" type="password" autocomplete="new-password" minlength="8" required>
-          </div>
-          <div class="signup-note">بعد الإنشاء سيتم تسجيل دخولك مباشرة، ويظهر رمز Telegram داخل صفحة الحساب.</div>
-          <div class="login-error" id="signupError"></div>
-          <button class="login-submit" id="signupBtn" type="submit">إنشاء الحساب</button>
-        </form>
-      </div>
-    </section>
-    <div class="login-foot">يمكنك إنشاء حسابك مباشرة، وكل مستخدم له بياناته وإعداداته الخاصة.</div>
-  </div>
-</main>
-<script>
-if(AthkarAuth.token()){
-  AthkarAuth.me().then(()=>location.replace('time.html')).catch(()=>AthkarAuth.clear());
-}
-showPass.onclick=()=>{const show=password.type==='password';password.type=show?'text':'password';showPass.textContent=show?'إخفاء':'إظهار'};
+      function switchAuth(mode) {
+        const login = mode === "login";
+        loginPane.style.display = login ? "block" : "none";
+        signupPane.style.display = login ? "none" : "block";
+        loginTab.classList.toggle("active", login);
+        signupTab.classList.toggle("active", !login);
+      }
+      loginTab.onclick = () => switchAuth("login");
+      signupTab.onclick = () => switchAuth("signup");
 
-function switchAuth(mode){
-  const login=mode==='login';
-  loginPane.style.display=login?'block':'none';
-  signupPane.style.display=login?'none':'block';
-  loginTab.classList.toggle('active',login);
-  signupTab.classList.toggle('active',!login);
-}
-loginTab.onclick=()=>switchAuth('login');
-signupTab.onclick=()=>switchAuth('signup');
+      showSignupPass.onclick = () => {
+        const show = signupPassword.type === "password";
+        signupPassword.type = show ? "text" : "password";
+        signupPassword2.type = show ? "text" : "password";
+        showSignupPass.textContent = show ? "إخفاء" : "إظهار";
+      };
 
-showSignupPass.onclick=()=>{
-  const show=signupPassword.type==='password';
-  signupPassword.type=show?'text':'password';
-  signupPassword2.type=show?'text':'password';
-  showSignupPass.textContent=show?'إخفاء':'إظهار';
-};
+      function paintPasswordRules() {
+        const v = signupPassword.value;
+        const checks = [
+          v.length >= 8,
+          /[A-Z]/.test(v),
+          /[a-z]/.test(v),
+          /\d/.test(v),
+        ];
+        ruleLen.classList.toggle("ok", checks[0]);
+        ruleUpper.classList.toggle("ok", checks[1]);
+        ruleLower.classList.toggle("ok", checks[2]);
+        ruleNumber.classList.toggle("ok", checks[3]);
 
-function paintPasswordRules(){
-  const v=signupPassword.value;
-  const checks=[
-    v.length>=8,
-    /[A-Z]/.test(v),
-    /[a-z]/.test(v),
-    /\d/.test(v)
-  ];
-  ruleLen.classList.toggle('ok',checks[0]);
-  ruleUpper.classList.toggle('ok',checks[1]);
-  ruleLower.classList.toggle('ok',checks[2]);
-  ruleNumber.classList.toggle('ok',checks[3]);
+        const score = checks.filter(Boolean).length;
+        strengthFill.className = "strength-fill" + (score ? " s" + score : "");
+        strengthLabel.className =
+          "strength-label" + (score ? " s" + score : "");
+        strengthLabel.textContent = [
+          "أدخل كلمة مرور",
+          "ضعيفة",
+          "متوسطة",
+          "جيدة",
+          "ممتازة — كل الشروط مكتملة ✓",
+        ][score];
+      }
+      signupPassword.addEventListener("input", paintPasswordRules);
 
-  const score=checks.filter(Boolean).length;
-  strengthFill.className='strength-fill'+(score?' s'+score:'');
-  strengthLabel.className='strength-label'+(score?' s'+score:'');
-  strengthLabel.textContent=[
-    'أدخل كلمة مرور',
-    'ضعيفة',
-    'متوسطة',
-    'جيدة',
-    'ممتازة — كل الشروط مكتملة ✓'
-  ][score];
-}
-signupPassword.addEventListener('input',paintPasswordRules);
+      signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        signupError.classList.remove("show");
 
-signupForm.addEventListener('submit',async e=>{
-  e.preventDefault();
-  signupError.classList.remove('show');
+        const pass = signupPassword.value;
+        if (pass !== signupPassword2.value) {
+          signupError.textContent = "كلمتا المرور غير متطابقتين";
+          signupError.classList.add("show");
+          return;
+        }
 
-  const pass=signupPassword.value;
-  if(pass!==signupPassword2.value){
-    signupError.textContent='كلمتا المرور غير متطابقتين';
-    signupError.classList.add('show');
-    return;
-  }
+        if (
+          !(
+            pass.length >= 8 &&
+            /[A-Z]/.test(pass) &&
+            /[a-z]/.test(pass) &&
+            /\d/.test(pass)
+          )
+        ) {
+          signupError.textContent = "كلمة المرور لا تحقق الشروط المطلوبة";
+          signupError.classList.add("show");
+          return;
+        }
 
-  if(!(pass.length>=8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /\d/.test(pass))){
-    signupError.textContent='كلمة المرور لا تحقق الشروط المطلوبة';
-    signupError.classList.add('show');
-    return;
-  }
+        signupBtn.disabled = true;
+        signupBtn.innerHTML = '<span class="spinner"></span> جاري إنشاء الحساب';
 
-  signupBtn.disabled=true;
-  signupBtn.innerHTML='<span class="spinner"></span> جاري إنشاء الحساب';
+        try {
+          const r = await fetch(AthkarAuth.API_BASE + "/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              display_name: signupName.value.trim(),
+              username: signupUsername.value.trim(),
+              password: pass,
+            }),
+          });
 
-  try{
-    const r=await fetch(AthkarAuth.API_BASE+'/api/register',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        display_name:signupName.value.trim(),
-        username:signupUsername.value.trim(),
-        password:pass
-      })
-    });
+          const j = await r.json().catch(() => ({}));
+          if (!r.ok || !j.ok || !j.session_token) {
+            throw new Error(j.error || "تعذر إنشاء الحساب");
+          }
 
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok||!j.ok||!j.session_token){
-      throw new Error(j.error||'تعذر إنشاء الحساب');
-    }
+          AthkarAuth.save(j.session_token, j.user, true);
+          location.replace("time.html");
+        } catch (err) {
+          signupError.textContent = err.message || "تعذر إنشاء الحساب";
+          signupError.classList.add("show");
+          signupBtn.disabled = false;
+          signupBtn.textContent = "إنشاء الحساب";
+        }
+      });
 
-    AthkarAuth.save(j.session_token,j.user,true);
-    location.replace('time.html');
-  }catch(err){
-    signupError.textContent=err.message||'تعذر إنشاء الحساب';
-    signupError.classList.add('show');
-    signupBtn.disabled=false;
-    signupBtn.textContent='إنشاء الحساب';
-  }
-});
-
-loginForm.addEventListener('submit',async e=>{
-  e.preventDefault();
-  loginError.classList.remove('show');
-  loginBtn.disabled=true; loginBtn.innerHTML='<span class="spinner"></span> جاري الدخول';
-  try{
-    const r=await fetch(AthkarAuth.API_BASE+'/api/login',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:username.value.trim(),password:password.value})
-    });
-    const j=await r.json().catch(()=>({}));
-    if(!r.ok||!j.ok||!j.session_token) throw new Error(j.error||'تعذر تسجيل الدخول');
-    AthkarAuth.save(j.session_token,j.user,remember.checked);
-    const next=new URLSearchParams(location.search).get('next');
-    const safeNext=/^[a-zA-Z0-9_.-]+\.html(?:\?.*)?$/.test(next||'')?next:'time.html';
-    location.replace(safeNext);
-  }catch(err){
-    loginError.textContent=err.message||'تعذر تسجيل الدخول';
-    loginError.classList.add('show');
-    loginBtn.disabled=false;loginBtn.textContent='دخول';
-  }
-});
-</script>
-</body>
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        loginError.classList.remove("show");
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner"></span> جاري الدخول';
+        try {
+          const r = await fetch(AthkarAuth.API_BASE + "/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: username.value.trim(),
+              password: password.value,
+            }),
+          });
+          const j = await r.json().catch(() => ({}));
+          if (!r.ok || !j.ok || !j.session_token)
+            throw new Error(j.error || "تعذر تسجيل الدخول");
+          AthkarAuth.save(j.session_token, j.user, remember.checked);
+          const next = new URLSearchParams(location.search).get("next");
+          const safeNext = /^[a-zA-Z0-9_.-]+\.html(?:\?.*)?$/.test(next || "")
+            ? next
+            : "time.html";
+          location.replace(safeNext);
+        } catch (err) {
+          loginError.textContent = err.message || "تعذر تسجيل الدخول";
+          loginError.classList.add("show");
+          loginBtn.disabled = false;
+          loginBtn.textContent = "دخول";
+        }
+      });
+    </script>
+  </body>
 </html>
