@@ -12,13 +12,36 @@
     <script>
       window.__authReady = AthkarAuth.require();
     </script>
+    <style>
+      .home-welcome {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 7px;
+      }
+
+      .home-app-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 15px;
+        object-fit: cover;
+        display: block;
+      }
+
+      .home-welcome-text {
+        font-size: 1.2rem;
+        font-weight: 900;
+        color: var(--text, #f9fbfa);
+      }
+    </style>
   </head>
   <body>
     <main class="app">
       <header class="topbar">
-        <div>
-          <div class="eyebrow" id="homeGreeting">لوحتك اليومية</div>
-          <h1>اهلاً في تطبيق الأذكـــار</h1>
+        <div class="home-welcome">
+          <img src="apple-touch-icon.png" alt="الأذكار" class="home-app-icon" />
+
+          <div class="home-welcome-text" id="homeGreeting">مرحبًا</div>
         </div>
         <div class="top-actions">
           <a
